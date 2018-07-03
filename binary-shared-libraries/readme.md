@@ -69,14 +69,14 @@ Below is a strategy for harnessing the shared libraries. Feel free to look at th
 
     In this case, directly from `nm`'s output you'd be able to infer
     ```
-// Return type is unknown, because name mangling does not include that info.
-extern ? MyCustomCxxLib::process_data(const char*, char*);
-
-// Return type and argument types aren't known, because it's a C function.
-// In C++, C functions must be declared extern "C" (this lets C++ know that
-// it should link against a symbol with an unmangled name).
-extern "C" ? my_custom_c_lib_process_data(???);
-```
+    // Return type is unknown, because name mangling does not include that info.
+    extern ? MyCustomCxxLib::process_data(const char*, char*);
+    
+    // Return type and argument types aren't known, because it's a C function.
+    // In C++, C functions must be declared extern "C" (this lets C++ know that
+    // it should link against a symbol with an unmangled name).
+    extern "C" ? my_custom_c_lib_process_data(???);
+    ```
 
   The missing types here are `int`, `void`, and `char *, int`. You can determine this through trial and error, or via reverse engineering.
 
