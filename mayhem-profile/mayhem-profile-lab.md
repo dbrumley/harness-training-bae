@@ -19,11 +19,20 @@ Known issues, need to be fixed for the LAB
 
 -----------------------------------------------------------------------------------------------------------------------
 
-## Exercise 1: Profiling two versions of openssl.
+Mayhem profile is a tool for comparing two or more targets across given
+test cases.
+It can be used for testing that a newer version of the target fixed an issue that was detected by mayhem
+and also to verify that the new version doesn't introduce performance regressions.
 
-While running Mayhem on open source library (OpenSSL), Mayhem detected a crash! (TODO: get crash details from Tyler/@@, add a print screen of the crash). A new version of OpenSSL was released, and we want to test if the bug was fixed and make sure that the library performance was not hit because of the fixed.
+In the lab, we will see an example of using Mayhem profile as a standalone CLI tool, but it can be integrated into a CI/CD pipeline in the future. 
 
-In this exercise, we will use a pre-downloaded set of mayhem generated test cases, to test that the bug was fixed, and look for performance issues. 
+## Exercise 1: Profiling two versions of openssl
+
+While running Mayhem on a known open source library (OpenSSL), Mayhem detected a crash!
+(This crash is a CVE found by Mayhem, more information here: [OpenSSL CVE](https://github.com/openssl/openssl/commit/610b66267e41a32805ab54cbc580c5a6d5826cb4#diff-5e137ee8834b94e9cb3fde78d900a21cL233))
+A new version of OpenSSL was released, and we want to test if the bug was fixed and make sure that the library performance was not hit because of the fixed.
+
+In this exercise, we will use a pre-downloaded set of mayhem generated test cases, to test that the bug was fixed, and look for performance issues.
 
 Instructions:
 Make sure that mayhem-profile is installed:
@@ -41,7 +50,7 @@ Run mayhem-profile:
 
 This directory contains the following :
 Two versions of openssl:
-Openssl-1.0.1u - the original library that contains the bug. 
+Openssl-1.0.1u - the original library that contains the bug.
 Openssl-1.0.1b - the updated library with the bug fix.
 test-cases : test cases that caused the crash that were downloaded from Mayhem.  
 	
@@ -90,7 +99,7 @@ test-580  timed out  False             False
 test-580  cpu-clock                    1.871983
 
 It is easy to see that the new version does not crash with any of the test cases that caused a crash in the first version.
-However, with the current set of test cases, we can't see if the fixed caused performance issues. This is because all the test cases we chose cause a crash. 
+However, with the current set of test cases, we can't see if the fixed caused performance issues. This is because all the test cases we chose cause a crash.
 
 TODO: can we say something about performance here? 
 TODO: Make the print screen prettier? (colors , etc.. )
