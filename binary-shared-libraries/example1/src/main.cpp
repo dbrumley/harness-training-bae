@@ -8,7 +8,7 @@ int main(int argc, char *argv[]) {
     // it comes from a serial device, taking in sensor readings.
     const char *in = argv[a];
 
-    char *out = new char[strlen(in)];
+    char *out = new char[strlen(in)+5];
     int x = MyCustomCxxLib::process_data(in, out);
     my_custom_c_lib_process_data(out, x);
 
