@@ -1,6 +1,6 @@
 ## Writing a Simple Harness with Source Code
 
-### Intro
+### Background
 
 The simplest kind of source-based harness to write is for a target that has an
 obvious entry point, as is often the case for parsers.  Having source is a big
@@ -10,16 +10,23 @@ over what you can test effectively, especially when the target is a library.
 This lab will take you through writing a very simple harness for an XML library
 whose source is freely available, tinyxml2.  We will demonstrate using a custom
 harness to both fuzz the main entry point for the library as well as a specific
-function in the library.
+function in the library.  These concepts will make it clear how writing a
+harness allows Mayhem to test specific parts of code.
+
+### Requirements
+
+* Basic familiarity reading and writing C code (only very basic C++ is used)
+* Tools: text editor, g++, and mayhem
+* Code: tinyxml2-2.0.1 (tarball included in src/)
 
 ### First Steps
 
-First you have to download the code and unzip the code, as shown below.
+First things first, you have to unzip the target code, as shown below.
 
 ```
-curl -o tinyxml2-2.0.1.tar.gz https://codeload.github.com/leethomason/tinyxml2/tar.gz/2.0.1
-# or grab the latest and ignore the talk of finding bugs
-#curl -o tinyxml2-6.2.0.tar.gz https://codeload.github.com/leethomason/tinyxml2/tar.gz/6.2.0
+cp src/tinyxml2-2.0.1.tar.gz ./
+# or download it yourself
+#curl -o tinyxml2-2.0.1.tar.gz https://codeload.github.com/leethomason/tinyxml2/tar.gz/2.0.1
 tar xzf tinyxml2-2.0.1.tar.gz
 cd tinyxml2-2.0.1/
 ```
@@ -28,7 +35,13 @@ If you look around in that directory, you'll see that there aren't a whole lot
 of files, which is really helpful when you're trying to figure out where to
 start!
 
-### Writing The Simplest Harness
+### Exercise 1: Writing the Simplest Harness
+
+Recall that we are trying to write a harness so we can send input to the target
+and test functionality, so we need to think about what the target does and what
+the main entry point for input would be.  In this case it's an XML library, so
+we can presume that it will likely take input and parse that input into an
+internal representation of an XML document.
 
 By reading the docs or the code itself, we can find that this library has a
 pretty straightforward interface for either loading from a file or from a char
@@ -36,14 +49,23 @@ array, which makes writing a harness to the parser very simple.
 
 Open `tinyxml2.cpp` (or `xmltest.cpp`) and look for the relevant functions for
 loading a file for parsing (or parsing a char array into an XML object).  We'll
-want to instantiate the most high-level object and pass fuzz input to it, which
-we will get from the file whose name is accessible to the harness as argv[1].
+want to instantiate the most high-level object and pass fuzz input to it.  In
+this case we will be supplying input from a file whose name we supply on the
+command line.  We do this for convenience, even though when you're writing the
+harness you have full control over how input gets passed to the target. For
+this lab we'll get input from a file whose name will be passed into the harness
+as argv[1].
 
-Optionally, you should print the object out or somehow confirm that the library
-successfully parsed the content you passed to it. This library provides
-functionality to print out XML objects, but you should at least return 0 on a
-successful parse and something else if something went wrong.
+Ideally, you should print the object out or somehow confirm that the library
+successfully parsed the content you passed to it. This provides two benefits:
+the first is that it confirms your code works, and the second is that the
+printing functionality of the target will get tested for bugs. This library
+provides functionality to print out XML objects, which you should use to ensure
+a successful parse and see if something went wrong.
 
+The first exercise will be for you to fill in the code sample below to
+implement the harness we just discussed by writing code to do what the comments
+are asking for.  To test your code, continue to the next section.
 
 ```
 // harness.cpp
@@ -113,11 +135,14 @@ the codebase.  Some ideas for further testing would be to use the library to
 manipulate the XML or to turn on some non-default options, so let's work
 through the latter option.
 
+### Exercise 2: Turning on Non-default Options
+
 Fire back up your text editor and change the XMLDocument constructor to use a
-non-default option (there's only two options and only one sounds like it would
-do more processing rather than less on the inputs).  Then compile your code
+non-default option (there's only two options, so we can go ahead and turn them
+both on so that more work is done).  After making the change, compile your code
 with a new output filename and use the sample XML file below to demonstrate
-that the non-default option makes a difference.
+that the non-default option makes a difference (it's also included in the src/
+directory as `whitespace-test.xml`).
 
 ```
 <a> This 
@@ -140,7 +165,7 @@ While you aren't likely to find a crash, and encouraging indication that you
 are hitting new code would be to see a higher number of edges covered at the
 end of the run.
 
-### Fuzzing a Specific Function
+### Exercise 3: Fuzzing a Specific Function
 
 One of the biggest benefits of having source code available is that you can
 more easily understand the code base and zero in on specific functions to fuzz.
@@ -148,7 +173,7 @@ Picking specific functions to fuzz is made easier by the fact that you can
 see how a target function is called in the codebase, and potentially modify the
 code to make it easier to fuzz.
 
-If you used version 2.0.1 for the earlier parts of the lab, you probably came
+If you used followed the instructions up to this point, you probably came
 across a crash in `StrPair::GetStr()` (if you didn't, you can still look at the
 code and follow the same process).  If you then started looking at the function
 to see if there were any interesting pieces of it, you might notice that it
