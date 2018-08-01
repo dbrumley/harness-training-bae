@@ -8,16 +8,13 @@ Either Ubuntu/Debian with mayhem-profile installed.
 Run:  sudo echo 0 | sudo tee /proc/sys/kernel/perf_event_paranoid  
 Create a profie-openssl-lab with the test cases & two libraries version (available at the mayhem-profile repo).
 
-Known issues, need to be fixed for the LAB 
-(TODO: the list below is copied from slack chat, add Jira tasks #, once @@ opens them)
-1. valgrind needs to be added as a dependency for `pip` installs of triager somehow
-2. @@ need to modify the thing my `README.md` for `pip` installation in a `venv`
-3. @@ need to ask SMART people if we can do relative paths (if yes, fix test…if no, make ticket for it)
-4. @@ need to talk to john about the valgrind error and see if he’s aware of it - if not, file ticket and have him prioritize it higher (edited)
-5. @@ need to add a warning when we’re not getting CPU clocks/cycles back from `perf` to explain why (also should look into this more to get a better explanation) 
-6. Profile ignores output file?
+Known issues, need to be fixed for the LAB
+https://forallsecure.atlassian.net/browse/K8-466 
+1. valgrind needs to be added as a dependency for `pip` installs of triager
+2. @@ need to add a warning when we’re not getting CPU clocks/cycles back from `perf` to explain why (also should look into this more to get a better explanation) 
+3. Profile ignores output file?
 
------------------------------------------------------------------------------------------------------------------------
+----------------------------------------------------------------------------------------------
 
 Mayhem profile is a tool for comparing two or more targets across given
 test cases.
