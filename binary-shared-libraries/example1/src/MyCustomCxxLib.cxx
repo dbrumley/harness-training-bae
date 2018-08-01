@@ -11,10 +11,15 @@ int process_data(const char *in, char *out) {
 
   char *tmp = &buf[0];
   while(*in)
-    *tmp++ = *in++ ^ i++;
+    *tmp++ = *in++ ^ (i++ % 7);
 
+  out[0] = 'x';
+  out[1] = 'y';
+  out[2] = 'z';
+  out[3] = 'z';
+  out[4] = 'y';
   for(int j = 0; j < i; j++)
-    out[j] = buf[i - j - 1];
+    out[j+5] = buf[i - j - 1];
 
   return i;
 }
