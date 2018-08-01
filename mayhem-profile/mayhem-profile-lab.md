@@ -3,10 +3,10 @@
 --------------------------------------------------------------------------------
 ## Internal - Remove from document  before the tutorial:
 TODO:
-Create container for this tutorial:
+Mayhem-profile needs to be installed on the provided VMs.
 Either Ubuntu/Debian with mayhem-profile installed.
 Run:  sudo echo 0 | sudo tee /proc/sys/kernel/perf_event_paranoid  
-Create a profie-openssl-lab with the test cases & two libraries version (available at the mayhem-profile repo). 
+Create a profie-openssl-lab with the test cases & two libraries version (available at the mayhem-profile repo).
 
 Known issues, need to be fixed for the LAB 
 (TODO: the list below is copied from slack chat, add Jira tasks #, once @@ opens them)
@@ -37,7 +37,7 @@ In this exercise, we will use a pre-downloaded set of mayhem generated test case
 Instructions:
 Make sure that mayhem-profile is installed:
 
-``` $ ./mayhem-profile
+``` $ mayhem-profile
  usage: mayhem-profile [-h] [-t TIMEOUT] [-i ITERATIONS] [-v]
        input output harnesses [harnesses ...]
  mayhem-profile: error: the following arguments are required: input, output,   harnesses.
@@ -106,11 +106,19 @@ However, we only downloaded the set of crashing test cases.
 Using Mayhem client, upload the first target to Mayhem, download all the test cases, and compare performance for non crashing test cases.
 Also, verify that the new version doesn't crash with any of the test cases that were downloaded (package might be a bit different from the one included).
 
-#### You can use the packgaed version of openssl-1.0.1b which is avaliavle at
+#### Use the packgaed version of openssl-1.0.1b which is avaliavle at
 
-``` $ ./mayhem-profile/lab-2
+``` $ <path_to>/mayhem-profile/lab-2
+```
+Upload to mayhem, and run mayhem:
+```
+$ mayhem upload -u <your_mayhem_url> opensll-cms-test/ --start-sword --duration 1200
 ```
 
-TODO: Make the print screen prettier? (colors , etc.. )
+Download new test cases using mayhem client:
+```
+$ mayhem testsuite -u <your_mayhem_url> download <job_id>
+```
 
-
+Run mayhem profile with both "crashing" and "non crashing" test cases.
+(some additional sample test cases are attched in lab-2/more-testcases)
