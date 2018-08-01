@@ -5,13 +5,13 @@ clean:
 	rm -rf example1 MyCustomCxxLib.so my_custom_c_lib.so
 
 example1: main.cpp MyCustomCxxLib.so MyCustomCxxLib.h my_custom_c_lib.so my_custom_c_lib.h
-	g++ -O0 -o $@ main.cpp MyCustomCxxLib.so my_custom_c_lib.so
+	g++ -std=c++03 -O0 -o $@ main.cpp MyCustomCxxLib.so my_custom_c_lib.so
 	strip $@
 
 %.so: %.c
-	gcc -shared -O0 -o $@ $^
+	gcc -std=c99 -shared -fPIC -O0 -o $@ $^
 	strip $@
 
 %.so: %.cxx
-	g++ -shared -O0 -o $@ $^
+	g++ -std=c++03 -shared -fPIC -O0 -o $@ $^
 	strip $@
