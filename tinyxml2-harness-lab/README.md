@@ -4,7 +4,7 @@
 
 The simplest kind of source-based harness to write is for a target that has an
 obvious entry point, as is often the case for parsers.  Having source is a big
-advantage, and beaing able to write a custom harness gives a lot of control
+advantage, and being able to write a custom harness gives you a lot of control
 over what you can test effectively, especially when the target is a library.
 
 This lab will take you through writing a very simple harness for an XML library
