@@ -1,0 +1,8 @@
+{
+    "fuzzers": [
+        {
+            "target": "root/cms-test",
+            "target_args": ["@@"]
+        }
+    ]
+}
