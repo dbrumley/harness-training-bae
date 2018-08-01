@@ -1,0 +1,10 @@
+{
+    "fuzzers": [
+        {
+            "target": "%(workdir)s/root/openssl",
+            "target_input": "@@",
+            "target_args": ["cms", "-cmsout", "-inform", "DER", "-in", "@@"],
+            "library_path": "%(workdir)s/root/lib/x86_64-linux-gnu"
+        }
+    ]
+}
