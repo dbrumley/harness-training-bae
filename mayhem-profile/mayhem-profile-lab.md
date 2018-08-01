@@ -99,9 +99,18 @@ test-580  timed out  False             False
 test-580  cpu-clock                    1.871983
 
 It is easy to see that the new version does not crash with any of the test cases that caused a crash in the first version.
-However, with the current set of test cases, we can't see if the fixed caused performance issues. This is because all the test cases we chose cause a crash.
+However, we only downloaded the set of crashing test cases.
 
-TODO: can we say something about performance here? 
+### Download all the test cases
+
+Using Mayhem client, upload the first target to Mayhem, download all the test cases, and compare performance for non crashing test cases.
+Also, verify that the new version doesn't crash with any of the test cases that were downloaded (package might be a bit different from the one included).
+
+#### You can use the packgaed version of openssl-1.0.1b which is avaliavle at
+
+``` $ ./mayhem-profile/lab-2
+```
+
 TODO: Make the print screen prettier? (colors , etc.. )
 
 
