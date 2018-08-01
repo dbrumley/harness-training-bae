@@ -1,0 +1,8 @@
+<a> This 
+	is &apos;  text  &apos; </a>
+<b>  This is &apos; text &apos;  
+</b>
+<c>This  is  &apos;  
+       
+	text &apos;</c>
+</element>
