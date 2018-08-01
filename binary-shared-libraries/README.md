@@ -1,10 +1,10 @@
 ## Binary-only Shared Library Harnessing
 
-In this tutorial, we'll look at "binary-only" C++ applications that do not seem immediately amenable to harnessing.
+In this lab, we'll look at "binary-only" C++ applications that do not seem immediately amenable to harnessing.
 
-In order to fuzz these applications anyways---at least, parts of them---we'll harness libraries shipped with the application. We'll use a strategy of linking a source C++ harness against the binary
+In order to fuzz these applications anyways---or at least, parts of them---we'll harness libraries shipped with the application. We'll use a strategy of linking a source C++ harness against the binary.
 
-### Background and motivation
+### Background
 
 #### (What's a shared library again?)
 
@@ -41,11 +41,14 @@ A large part of the difficulty in harnessing binary-only applications is that---
 
 For clarification: this tutorial is aimed at exploring _custom_ shared libraries shipped with an application for which source is not available. If, for example, you know that an application uses an open source library, it's better to acquire the source (preferably for the same version as the application uses) and use source-harnessing techniques on that.
 
-This tutorial is for C and C++ libraries. Many details and techniques will be specific to C and C++. (Although, some languages produce shared libraries that may be harnessed as if they were written in C). The tutorial uses Linux, and the commands shown won't work on Windows. However, all the principles and almost every specific trick here will work for any operating system that supports shared libraries---just, with different commands.
+### Requirements
 
-### Examples
+* Skills: Basic C/C++ programming
+* Tools: g++ (and gnu binutils)
 
-#### Example 1: Basics
+This tutorial is for C and C++ libraries. Many details and techniques will be specific to C and C++. Although this tutorial uses Linux, and the exact commands shown will only work on Linux, all the principles and tricks here translate to any platform that supports shared libraries---Windows, Mac OS, iOS, Android and more---albeit with different tools and commands.
+
+### Example 1: Basics
 
 This is a toy program that makes unnecessary use of custom shared libraries to merely echo its command line args back to stdout.
 
@@ -88,15 +91,13 @@ Below is a strategy for harnessing these shared libraries. Physically follow alo
 
 Warning: this strategy works best when using the same C++ compiler and platform as the target libraries were built with. For example, things may not work if you attempt to compile your harness with g++ when the library was compiled with clang++. In particular: g++'s libstdc++ changed its implementation of std::string a few years ago, so older (still in use!) versions of g++ toolchains are not binary compatible with recent versions. (Particularly for g++, solving this is sometimes as easy as switching between `-D_GLIBCXX_USE_CXX11_ABI=0` and `-D_GLIBCXX_USE_CXX11_ABI=1`.)
 
-#### Example 2: C++ Objects
+### Example 2: C++ Objects
 
 TODO: Example where the harness needs to replicate C++ classes and call C++ constructors.
 
-### Exercises
+### Exercise 1: TODO
 
-#### Exercise 1: TODO
-
-#### Exercise 2: Mapnik test code.
+### Exercise 2: Mapnik test code.
 
 TODO: (I haven't totally settled on the mapnik example, still deciding)
 
@@ -104,7 +105,11 @@ This exercise is much more of a "real" application than previous examples and ex
 
 Your goal is 
 
-### More words
+### Conclusion
+
+TODO
+
+### Addendum
 
 Harnessing is an ad-hoc process, and your experience will rarely conform exactly to the above examples. Get creative! Here are some tricks I've used before:
 
@@ -113,5 +118,7 @@ Harnessing is an ad-hoc process, and your experience will rarely conform exactly
 * For C harnesses, use the Hex-Rays decompiler to automatically generate a header file for you (but be prepared to fix it up, IDA rarely gets everything exactly right).
 
 * A C++ library can be linked to by a C (or even assembly) harness, if the C harness calls the mangled names (and, for some platforms, uses compiler extensions to declare alternate calling conventions). This can work around many issues with C++ linking, foreign STLs, etc.
+
+* In fact, shared libraries written in almost any language can be treated as if they were written in C. A C harness can load and interact with them, although you'll probably also need to load and initialize that language's runtime libraries first.
 
 * If the shared library doesn't seem to work correctly because the application initializes it a way that you can't replicate, try moving your harness "main()" into some function in an LD_PRELOAD object. By launching the original application executable with this harness-LD_PRELOAD, you can cause your harness to run after the application has performed initialization.
