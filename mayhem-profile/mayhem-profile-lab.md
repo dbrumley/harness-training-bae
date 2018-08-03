@@ -23,7 +23,7 @@ and also to verify that the new version doesn't introduce performance regression
 
 In the lab, we will see an example of using Mayhem profile as a standalone CLI tool, but it can be integrated into a CI/CD pipeline in the future. 
 
-## Exercise 1: Profiling two versions of openssl
+## Exercise: Profiling two versions of openssl
 
 While running Mayhem on a known open source library (OpenSSL), Mayhem detected a crash!
 (This crash is a CVE found by Mayhem, more information here: [OpenSSL CVE](https://github.com/openssl/openssl/commit/610b66267e41a32805ab54cbc580c5a6d5826cb4#diff-5e137ee8834b94e9cb3fde78d900a21cL233))
@@ -60,40 +60,41 @@ $ ./mayhem-profile /test-cases profile.output openssl-1.0.1u openssl-1.0.1b
 ```
 
 Examine the results:
-input     metric     openssl-1.0.1b    openssl-1.0.1u
---------  ---------  ----------------  ----------------
-test-578  crashed    True              False
-test-578  cycles                       6185745
-test-578  timed out  False             False
-test-578  cpu-clock                    1.799397
-test-577  crashed    True              False
-test-577  cycles                       6528123
-test-577  timed out  False             False
-test-577  cpu-clock                    1.927653
-test-579  crashed    True              False
-test-579  cycles                       6146520
-test-579  timed out  False             False
-test-579  cpu-clock                    1.801818
-test-576  crashed    True              False
-test-576  cycles                       6462542
-test-576  timed out  False             False
-test-576  cpu-clock                    1.898554
-test-581  crashed    True              False
-test-581  cycles                       6241992
-test-581  timed out  False             False
-test-581  cpu-clock                    1.831641
-test-575  crashed    True              False
-test-575  cycles                       6268562
-test-575  timed out  False             False
-test-575  cpu-clock                    1.864625
-test-582  crashed    True              False
-test-582  cycles                       6229571
-test-582  timed out  False             False
-test-582  cpu-clock                    1.769081
-test-580  crashed    True              False
-test-580  cycles                       6367691
-test-580  timed out  False             False
-test-580  cpu-clock                    1.871983
+
+| input     |  metric   | openssl-1.0.1b |  openssl-1.0.1u |
+| :-------: | :-------: | :-------------:| :-------------: |
+| test-578 | crashed   |   True         |  False          |
+| test-578 | cycles    |                |  6185745        |
+| test-578 | timed out | False          |  False          |
+| test-578 | cpu-clock |                |  1.799397       |
+| test-577 | crashed   | True           |  False          |
+| test-577 |  cycles   |                |  6528123        |
+| test-577 | timed out | False          |  False          |
+| test-577 | cpu-clock |                |  1.927653       |
+| test-579 | crashed   | True           |  False          |
+| test-579 | cycles    |                |  6146520        |
+| test-579 | timed out | False          |  False          |
+| test-579 | cpu-clock |                |  1.801818       |
+| test-576 | crashed   | True           |  False          |
+| test-576 | cycles    |                |  6462542        |
+| test-576 | timed out | False          |  False          |
+| test-576 | cpu-clock |                |  1.898554       |
+| test-581 | crashed   | True           |  False          |
+| test-581 | cycles    |                |  6241992        |
+| test-581 | timed out | False          |  False          |
+| test-581 | cpu-clock |                |  1.831641       |
+| test-575 | crashed   | True           |  False          |
+| test-575 | cycles    |                |  6268562        |
+| test-575 | timed out | False          |  False          |
+| test-575 | cpu-clock |                |  1.864625       |
+| test-582 | crashed   | True           |  False          |
+| test-582 | cycles    |                |  6229571        |
+| test-582 | timed out | False          |  False          |
+| test-582 | cpu-clock |                |  1.769081       |
+| test-580 |  crashed  |  True          |  False          |
+| test-580 |  cycles   |                |  6367691        |
+| test-580 | timed out | False          |  False          |
+| test-580 | cpu-clock |                |  1.871983       |
 
 It is easy to see that the new version does not crash with any of the test cases that caused a crash in the first version.
 However, we only downloaded the set of crashing test cases.
