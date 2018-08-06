@@ -1,5 +1,5 @@
-# Mayhem-profile Lab
-(Alexander Taylor & Michal)
+## Mayhem-profile Lab
+## Alexander Taylor & Michal
 --------------------------------------------------------------------------------
 ## Internal - Remove from document  before the tutorial:
 TODO:
@@ -16,29 +16,40 @@ https://forallsecure.atlassian.net/browse/K8-466
 
 ----------------------------------------------------------------------------------------------
 
+### Background
+
 Mayhem profile is a tool for comparing two or more targets across given
 test cases.
-It can be used for testing that a newer version of the target fixed an issue that was detected by mayhem
-and also to verify that the new version doesn't introduce performance regressions.
+It can be used for both performance and regression testing.
+Mayhem profile works on a suite of test cases. This suite can be a partial or full set of Mayhem generated test cases.
+The user will downloaded test suites from Mayhem, and will point Mayhem-profile to the location of the tests and the targets that should be compared.
+Mayhem profile will run the targets on all the test cases in the input directory, and will output performance metrics and crash status for each test case.
+More specifcally, Mayhem profile can help testing the following:
 
-In the lab, we will see an example of using Mayhem profile as a standalone CLI tool, but it can be integrated into a CI/CD pipeline in the future. 
+1. A newer version of the target fixed an issue that was detected by mayhem (run "crash" test cases)
+2. A newer version of the target didn't introduce performance regeressions. (run "non-crash" test cases)
+3. A newer version didn't introduce new bugs (run all test cases)
 
-## Exercise: Profiling two versions of openssl
+In the lab, we will see an example of using Mayhem profile as a standalone CLI tool, but it can be integrated into a CI/CD pipeline in the future.
 
-While running Mayhem on a known open source library (OpenSSL), Mayhem detected a crash!
-(This crash is a CVE found by Mayhem, more information here: [OpenSSL CVE](https://github.com/openssl/openssl/commit/610b66267e41a32805ab54cbc580c5a6d5826cb4#diff-5e137ee8834b94e9cb3fde78d900a21cL233))
-A new version of OpenSSL was released, and we want to test if the bug was fixed and make sure that the library performance was not hit because of the fixed.
+### Requirements
 
-In this exercise, we will use a pre-downloaded set of mayhem generated test cases, to test that the bug was fixed, and look for performance issues.
-
-Instructions:
-Make sure that mayhem-profile is installed:
+* mayhem-profile needs to be istalled on the machine:
+To validate that it is installed correctly
 
 ``` $ mayhem-profile
  usage: mayhem-profile [-h] [-t TIMEOUT] [-i ITERATIONS] [-v]
        input output harnesses [harnesses ...]
  mayhem-profile: error: the following arguments are required: input, output,   harnesses.
 ```
+
+### Exercise: Profiling two versions of openssl
+
+While running Mayhem on a known open source library (OpenSSL), Mayhem detected a crash!
+(This crash is a CVE found by Mayhem, more information here: [OpenSSL CVE](https://github.com/openssl/openssl/commit/610b66267e41a32805ab54cbc580c5a6d5826cb4#diff-5e137ee8834b94e9cb3fde78d900a21cL233))
+A new version of OpenSSL was released, and we want to test if the bug was fixed and make sure that the library performance was not hit because of the fixed.
+
+In this exercise, we will use a pre-downloaded set of mayhem generated test cases, to test that the bug was fixed, and look for performance issues.
 
 Run mayhem-profile:
 
@@ -99,7 +110,7 @@ Examine the results:
 It is easy to see that the new version does not crash with any of the test cases that caused a crash in the first version.
 However, we only downloaded the set of crashing test cases.
 
-### Download all the test cases
+#### Download all the test cases
 
 Using Mayhem client, upload the first target to Mayhem, download all the test cases, and compare performance for non crashing test cases.
 Also, verify that the new version doesn't crash with any of the test cases that were downloaded (package might be a bit different from the one included).
@@ -110,7 +121,7 @@ Also, verify that the new version doesn't crash with any of the test cases that 
 ```
 Upload to mayhem, and run mayhem:
 ```
-$ mayhem upload -u <your_mayhem_url> opensll-cms-test/ --start-sword --duration 1200
+$ mayhem upload -u <your_mayhem_url> openssl-cms-test/ --start-sword --duration 1200
 ```
 
 Download new test cases using mayhem client:
@@ -119,4 +130,5 @@ $ mayhem testsuite -u <your_mayhem_url> download <job_id>
 ```
 
 Run mayhem profile with both "crashing" and "non crashing" test cases.
-(some additional sample test cases are attched in lab-2/more-testcases)
+(some additional sample test cases are attched in mayhem-profile/lab-2/more-testcases)
+Look for performance regressions/new bugs in the new version (reminder, the new version is mayhem-profile/lab-1/openssl-1.0.1u)
