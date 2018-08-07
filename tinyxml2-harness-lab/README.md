@@ -16,7 +16,7 @@ harness allows Mayhem to test specific parts of code.
 ### Requirements
 
 * Basic familiarity reading and writing C code (only very basic C++ is used)
-* Tools: text editor, g++, and mayhem
+* Tools: text editor, g++, mayhem (cli), and a configured Mayhem instance
 * Code: tinyxml2-2.0.1 (tarball included in src/)
 
 ### First Steps
@@ -45,31 +45,13 @@ internal representation of an XML document.
 
 By reading the docs or the code itself, we can find that this library has a
 pretty straightforward interface for either loading from a file or from a char
-array, which makes writing a harness to the parser very simple.
-
-Open `tinyxml2.cpp` (or `xmltest.cpp`) and look for the relevant functions for
-loading a file for parsing (or parsing a char array into an XML object).  We'll
-want to instantiate the most high-level object and pass fuzz input to it.  In
-this case we will be supplying input from a file whose name we supply on the
-command line.  We do this for convenience, even though when you're writing the
-harness you have full control over how input gets passed to the target. For
-this lab we'll get input from a file whose name will be passed into the harness
-as argv[1].
-
-Ideally, you should print the object out or somehow confirm that the library
-successfully parsed the content you passed to it. This provides two benefits:
-the first is that it confirms your code works, and the second is that the
-printing functionality of the target will get tested for bugs. This library
-provides functionality to print out XML objects, which you should use to ensure
-a successful parse and see if something went wrong.
-
-The first exercise will be for you to fill in the code sample below to
-implement the harness we just discussed by writing code to do what the comments
-are asking for.  To test your code, continue to the next section.
+array, which makes writing a harness to the parser very simple.  Look at the
+skeleton code below to see what the harness should look like.
 
 ```
 // harness.cpp
 #include "tinyxml2.h"
+using namespace tinyxml2;
 
 int main(int argc, char **argv)
 {
@@ -82,6 +64,32 @@ int main(int argc, char **argv)
     return retval;
 }
 ```
+
+The first exercise is for you to fill in the skeleton code above to
+implement the harness we just discussed by writing code to do what the each of
+the comments is asking for.
+
+Open `tinyxml2.cpp` (or `xmltest.cpp`) and look for the relevant functions for
+loading a file for parsing (or parsing a char array into an XML object).  We'll
+want to instantiate the most high-level object and pass fuzz input to it.
+
+In this case we will be supplying input from a file whose name we supply on the
+command line.  We do this for convenience, even though when you're writing the
+harness you have full control over how input gets passed to the target. For
+this lab we'll get input from a file whose name will be passed into the harness
+as argv[1].
+
+If you can't find the right functions after five minutes of looking, ask the
+instructor and they will point you in the right direction.
+
+Last, you should print the object out or somehow confirm that the library
+successfully parsed the content you passed to it.  This provides two benefits:
+the first is that it confirms your code works, and the second is that the
+printing functionality of the target will get tested for bugs.  This library
+provides functionality to print out XML objects, which you should use to ensure
+a successful parse and see if something went wrong.
+
+To build and test your harness code, continue on to the next section.
 
 ### Building the Harness
 
@@ -127,6 +135,9 @@ probably isn't a very exciting one) and can look at the output for that.
 Otherwise, it might be interesting to download a couple of the generated
 testcases and see what kind of inputs Mayhem generated.
 
+If you have any questions so far, flag down an instructor, otherwise continue
+on.
+
 ### Next Steps with Source
 
 So at this point we're hitting the parsing functionality of the library, which
@@ -137,11 +148,11 @@ through the latter option.
 
 ### Exercise 2: Turning on Non-default Options
 
-Fire back up your text editor and change the XMLDocument constructor to use a
-non-default option (there's only two options, so we can go ahead and turn them
-both on so that more work is done).  After making the change, compile your code
-with a new output filename and use the sample XML file below to demonstrate
-that the non-default option makes a difference (it's also included in the src/
+Fire back up your text editor and change the XMLDocument constructor to use
+non-default options (there's only two options, so we can go ahead and turn
+them both on).  After making the change, compile your code with a new output
+filename and use the sample XML file below to demonstrate that the
+non-default option makes a difference (it's also included in the src/
 directory as `whitespace-test.xml`).
 
 ```
@@ -164,6 +175,9 @@ this now.
 While you aren't likely to find a crash, and encouraging indication that you
 are hitting new code would be to see a higher number of edges covered at the
 end of the run.
+
+If you can't find the options or have any other questions, the instructor can
+point you in the right direction.
 
 ### Exercise 3: Fuzzing a Specific Function
 
@@ -275,4 +289,7 @@ We didn't touch on some of the advanced topics that are possible with source
 (i.e. patch out checks, instantiate complicated objects, or redirect inputs)
 but this should give you an idea of the power and convenience of being able to
 harness source code.
+
+If you have any questions on writing harnesses for source code or harnesseses
+in general, feel free to ask the instructor.
 
