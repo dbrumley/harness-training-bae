@@ -2,7 +2,7 @@
 
 This tutorial is designed to be the first in a series of tutorials on how to use MAYHEM to work with binary applications. In this tutorial, we will cover the six steps to analyzing a binary with MAYHEM:
 
-  1. Confirm that you can run the program on the command line. 
+  1. Confirm that you can run the program on the command line.
   2. Package up the application Mayhem package /usr/bin/objdump mydir.
   3. Edit configuration to specify the command line you ran
   4. Upload the package to the Mayhem cloud service and start mayhem NOTE: WHERE DO YOU GET THE URL? Mayhem upload mydir —start-sword
@@ -76,7 +76,7 @@ Usage: objdump <option(s)> <file(s)>
   -v, --version            Display this program's version number
   -i, --info               List object formats and architectures supported
   -H, --help               Display this information
-root@d5ec5618a4ed:~# 
+root@d5ec5618a4ed:~#
 ```
 
 Running with no flags isn't very helpful. If we take a look at the help menu that's printed out, we see there's a variety of flags printed out. The flags `-x` and `-D` look useful. Let's try running again with those flags.
@@ -93,11 +93,11 @@ start address 0x0000000000005430
 Program Header:
     PHDR off    0x0000000000000040 vaddr 0x0000000000000040 paddr 0x0000000000000040 align 2**3
          filesz 0x00000000000001f8 memsz 0x00000000000001f8 flags r-x
-         
+
 ...
-         
-  1a:   66 61                   data16 (bad) 
-  1c:   61                      (bad)  
+
+  1a:   66 61                   data16 (bad)
+  1c:   61                      (bad)
   1d:   35 62 64 31 30          xor    $0x30316462,%eax
   22:   65 63 63 64             movslq %gs:0x64(%rbx),%esp
   26:   2e 64 65 62             cs fs gs (bad) {%k6}
@@ -105,8 +105,8 @@ Program Header:
   2c:   00 00                   add    %al,(%rax)
   2e:   00 00                   add    %al,(%rax)
   30:   c2 01 46                retq   $0x4601
-  33:   f8                      clc    
-root@d5ec5618a4ed:~# 
+  33:   f8                      clc
+root@d5ec5618a4ed:~#
 ```
 
 Terrific. Now we know exactly how we want to invoke `objdump`, with the `-xD` flags.
@@ -124,7 +124,7 @@ INFO:root:Packaging dependency: /usr/lib/x86_64-linux-gnu/libopcodes-2.28-system
 INFO:root:Packaging dependency: /usr/lib/x86_64-linux-gnu/libbfd-2.28-system.so -> /tmp/objdump-wng7lsdf/root/usr/lib/x86_64-linux-gnu/libbfd-2.28-system.so
 INFO:root:Generating default configuration under: /tmp/objdump-wng7lsdf/config.json
 INFO:root:Packaged /usr/bin/objdump under: /tmp/objdump-wng7lsdf
-root@d5ec5618a4ed:~# 
+root@d5ec5618a4ed:~#
 ```
 
 # Step 3: Edit the Configuration.
@@ -154,7 +154,7 @@ The `config.json` file contains auto-populated configuration information for MAY
 We do need to modify the `config.json` file. Let's take a look at what's inside first.
 
 ```
-root@d5ec5618a4ed:~# cat /tmp/objdump-wng7lsdf/config.json 
+root@d5ec5618a4ed:~# cat /tmp/objdump-wng7lsdf/config.json
 {
     "fuzzers": [
         {
@@ -210,12 +210,12 @@ INFO:root:Downloaded testcase: /tmp/testsuite-zhuxk3_7/test-11
 INFO:root:Downloaded testcase: /tmp/testsuite-zhuxk3_7/test-10
 INFO:root:Downloaded 8 testcases
 INFO:root:Suite downloaded
-root@722c14ef332a:~# 
+root@722c14ef332a:~#
 ```
 
 If MAYHEM finds a crashing input, you should be able to reproduce the crash.
 
 ```
-root@722c14ef332a:~# objdump -xD /tmp/testsuite-zhuxk3_7/.meta/crashes/test-14 
+root@722c14ef332a:~# objdump -xD /tmp/testsuite-zhuxk3_7/.meta/crashes/test-14
 Segmentation fault
 ```
