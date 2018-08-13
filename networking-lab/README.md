@@ -17,7 +17,7 @@ populatated.  The fields are as follows:
 
 * URL: This contains the protocol the target uses (udp or tcp), the ip
 address of the target (localhost), and the port the target listens/connects
-on.  It has the form: <protocol>://localhost:<port>
+on.  It has the form: `<protocol>://localhost:<port>`
 * is_client: True or False dependening on whether or not the target is
 a client
 * timeout: Timeout in ms of how long to wait before closing the network
@@ -57,7 +57,7 @@ networks.  Bacsrv implements this protocol.
 
 3. Edit the network config.  Follow the below steps to figure out
 the correct information:
-  a. Run the target to see if it provides anything useful.
+    a. Run the target to see if it provides anything useful.
 ```
 $ ./bacserv
 BACnet Server Demo
@@ -67,18 +67,18 @@ Max APDU: 1476
 ```
 Unfortunately, the above output doesn't tell us anything.
 
-  b.  Run strace to identify the port and protocol.
+    b.  Run strace to identify the port and protocol.
 `strace -f -o /tmp/slog ./bacsrv`
 `-f` indicates follow children, and `-o` is the file our results are written to.
 
-  c.  Because this is a server, we know it binds to a port.  Grep for bind in the results:
+    c.  Because this is a server, we know it binds to a port.  Grep for bind in the results:
 ```
 $ grep bind /tmp/slog
 20399 bind(3, {sa_family=AF_INET, sin_port=htons(47808), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
 ```
 We see that the target is IPV4 (AF_INET) and bound to port 47808.
 
-  d.  To identify the protocol, grep for `socket`.
+    d.  To identify the protocol, grep for `socket`.
 ```
 $ grep socket /tmp/slog
 20399 socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
@@ -90,7 +90,7 @@ We see this uses UDP.
 4.  The package is ready, to begin fuzzing run:
 `mayhem upload bacnet/ --start-sword --duration 30`
 
-###Tips
+### Tips
 * Run the help menu to see what capabilities are available.  Always look
 for the option to run the target in the foreground (ie don't daemonize).
 * Strace can be used to identify missing configuration files or modules.
