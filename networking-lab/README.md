@@ -56,7 +56,9 @@ networks.  Bacsrv implements this protocol.
   and create a default Mayhem configuration file.
 
 3. Edit the network config.  Follow the below steps to figure out
-the correct information:\s\s
+the correct information:
+
+
     a. Run the target to see if it provides anything useful.
 ```
 $ ./bacserv
