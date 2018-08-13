@@ -56,7 +56,7 @@ networks.  Bacsrv implements this protocol.
   and create a default Mayhem configuration file.
 
 3. Edit the network config.  Follow the below steps to figure out
-the correct information:
+the correct information:\s\s
     a. Run the target to see if it provides anything useful.
 ```
 $ ./bacserv
@@ -68,7 +68,9 @@ Max APDU: 1476
 Unfortunately, the above output doesn't tell us anything.
 
     b.  Run strace to identify the port and protocol.
-`strace -f -o /tmp/slog ./bacsrv`
+```
+strace -f -o /tmp/slog ./bacsrv
+```
 `-f` indicates follow children, and `-o` is the file our results are written to.
 
     c.  Because this is a server, we know it binds to a port.  Grep for bind in the results:
