@@ -1,0 +1,7 @@
+digraph G {
+    size="5.0,6.0";
+    graph [fontname="Courier New", splines="polyline"]
+    node [fontname="Courier New"]
+    edge [fontname="Courier New"]
+    0 [shape="box", label="[block-0]\na = user_input0()\lb = user_input1()\l", style="filled", fillcolor="#ffeecc"];
+}

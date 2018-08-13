@@ -1,0 +1,35 @@
+\mode<presentation>
+
+\setbeamertemplate{background}{
+  \begin{tikzpicture}
+  \useasboundingbox (0,0) rectangle(\the\paperwidth,\the\paperheight);
+  \fill[color=white] (0,2) rectangle (\the\paperwidth,\the\paperheight);
+  \fill[color=fasgray] (0,0) rectangle(\the\paperwidth,1.2);
+  \ifnum\thepage>1\relax%
+   \fill[white,opacity=1] (0,0) rectangle(\the\paperwidth,\the\paperheight);
+   \fi
+  \end{tikzpicture}
+}
+
+% Title page
+\defbeamertemplate*{title page}{fas}[1][]
+{
+  
+  \begin{tikzpicture}
+
+  \useasboundingbox (0,0) rectangle(\the\paperwidth,\the\paperheight);
+  \node[inner sep=0pt] (logo) at (-1.15,5.2)
+    {\includegraphics[width=1\textwidth]{logo.png}};
+
+  \node[align=left, inner sep=0pt, text width=6cm] at (7.5, 6) {\usebeamerfont{title}\inserttitle};
+  \node[align=left, inner sep=0pt, text=white] at (7, 0.9) {\usebeamerfont{author}\insertauthor};
+  \node[align=left, inner sep=0pt, text=white] at (7, 0.4) {\usebeamerfont{author}\insertdate};
+  \end{tikzpicture}
+}
+
+
+\setbeamertemplate{items}[square]
+\setbeamertemplate{sections/subsections in toc}[square]
+
+\mode
+<all>

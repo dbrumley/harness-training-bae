@@ -1,0 +1,5 @@
+\beamer@sectionintoc {1}{Agenda}{2}{0}{1}
+\beamer@sectionintoc {2}{Introduction}{3}{0}{2}
+\beamer@sectionintoc {3}{Understanding objdump}{6}{0}{3}
+\beamer@sectionintoc {4}{Packaging objdump}{9}{0}{4}
+\beamer@sectionintoc {5}{Uploading the objdump Package}{14}{0}{5}
