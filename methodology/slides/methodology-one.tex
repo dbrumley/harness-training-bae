@@ -1,0 +1,428 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{listings}
+
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows}
+
+\tikzset{
+  block/.style={
+    rectangle,
+    draw,
+    draw=black,
+    fill=gray!10,
+    execute at begin node=\setlength{\baselineskip}{8pt}
+  }
+}
+\tikzset{
+  blockhighlight/.style={
+    rectangle,
+    draw,
+    draw=black,
+    fill=green!10,
+    execute at begin node=\setlength{\baselineskip}{8pt}
+  }
+}
+
+%\tikzstyle{block} = [rectangle, draw, draw=black, fill=gray!10, execute at begin node \setlength{\baselineskip}{4pt}]
+\tikzstyle{arrow} = [->, > = latex']
+\def\code#1{\scriptsize{\texttt{#1}}}
+
+\lstset{basicstyle=\scriptsize\ttfamily,breaklines=true}
+\lstset{framextopmargin=50pt}
+
+\title{Fuzzing, Symbolic Execution, and Finding Vulnerabilites in Binary Applications}
+\date{\today}
+\author[Eubanks]{Alex Eubanks \texttt{<alex.eubanks@forallsecure.com>}}
+
+\usetheme{fas}
+
+\begin{document}
+
+\begin{frame}
+\titlepage
+\end{frame}
+
+\section{Agenda}
+
+\begin{frame}{Agenda}
+\setlength{\parskip}{0cm}
+\tableofcontents
+\end{frame}
+
+\section{What is Fuzzing}
+
+\begin{frame}
+\frametitle{What is Fuzzing}
+Fuzzing is the process of testing an application for bugs by forcing the application to process different inputs, and observing the application for abnormal behavior. Fuzzing has become a popular method across multiple disciplines and organizations for discovering problems in software.
+\par
+Fuzzing differs sharply from traditional testing frameworks, where developers manually implement tests to test code. Manually-generated tests offer the developer great fidelity in how to test their code, with a trade-off that only the tests imagined and implemented by the developer are run. Fuzzing generates hundreds of thousands, to millions of inputs, and runs these over the program, testing functionality and edge-cases developers don't imagine, or simply don't have time to implement themselves.
+\end{frame}
+
+\section{Fuzzing {\&} Fuzzers}
+
+\begin{frame}
+\frametitle{The Basic Components of a Fuzzer}
+All fuzzers are composed of a few basic components.
+
+\begin{itemize}
+  \item \textbf{Input Generation} - All fuzzers have a way of generating input to feed into the program.
+  \item \textbf{Program Invocation \& Observation} - All fuzzers have a way to invoke the program under test, feed fuzzer-generated input into that program, and observe the program for errors.
+\end{itemize}
+\end{frame}
+
+\subsection{Input Generation}
+\begin{frame}
+\frametitle{Input Generation}
+There are three primary methods of input generation:
+
+\begin{itemize}
+  \item Random Data
+  \item Generation-Based
+  \item and Mutation-Based.
+\end{itemize}
+\end{frame}
+
+\begin{frame}
+\frametitle{Random Data}
+The most basic form of fuzzing creates random data, and feeds this data into a program. This method is considered to be largely ineffective. Often times, when a fuzzer has no data or understanding of the format for the input, random fuzzing will be used. As we will see in later sections, advanced analysis tools can begin with random data and move towards more sophisticated input generation methods.
+\end{frame}
+
+\begin{frame}
+\frametitle{Generation-Based}
+Generation-based input generation uses a specification of the format for input, and creates inputs which meet this specification. This method can help quickly test whether a program correctly parses an input according to a specification, but may fall short when a program's parser does not correctly parse the specification, the specification is incomplete, or the specification becomes outdated.
+\par
+\textit{Fuzzers generate tests through a variety of methods, not just through generation-based methods. This vocabulary can be confusing. When we refer to, "Input generation," we refer to input generation in general, and not specifically generation-based input generation.}
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Mutation-Based}
+Mutation-based input generation uses existing inputs, often referred to as, "Seed," inputs, and makes small changes. When paired with a feedback loop, mutation-based fuzzing can also discover the format of inputs over time. Mutation-based fuzzing has become popular due to its effectiveness and ease of use on testers.
+\end{frame}
+
+
+\subsection{Program Invocation {\&} Observation}
+\begin{frame}
+\frametitle{Program Invocation {\&} Observation}
+A fuzzer must be able to start a program repeatedly, and then feed its generated input into the program. Changes to the fuzzer must be made for each platform a fuzzer supports, and each method of feeding input a fuzzer supports. While the program runs, the fuzzer must be able to observe the program for memory errors. Finally, a fuzzer works to make this process as fast as possible, allowing the fuzzer to run more test iterations in a given time period.
+\end{frame}
+
+
+\subsection{Coverage-Based Fuzzing}
+\begin{frame}
+\frametitle{Coverage-Based Fuzzing}
+A feature in fuzzing which has become popular is coverage-based fuzzing. Coverage-based fuzzing uses feedback from each run of the program to learn which inputs cover new code. While details may differ between implementation, the general concept remains the same.
+
+To begin, we need to imagine a computer program represented in the form of a Control-Flow Graph. A Control-Flow Graph breaks our program into basic blocks, which are linear sequences of operations. These block are attached by edges, which represent paths our program may traverse.
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Example Program}
+Let's look at an example program.
+\begin{lstlisting}[breaklines=false]
+a = user_input0()
+b = user_input1()
+if (a < 10) {
+  c = 30
+}
+else {
+  if (b = 0xdeadbeef) {
+    c = 100
+  }
+  else {
+    c = 0
+  }
+}
+\end{lstlisting}
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Example Program - Control-Flow Graph}
+And now an example Control-Flow Graph of this program.
+
+\begin{center}
+  \begin{tikzpicture}
+    \node[block, align=center] (b0) at (0, 6) {\code{[ block-0 ]}\\\code{a = user\_input0()}\\\code{b = user\_input1()}};
+    \node[block, align=center] (b1) at (-2, 4) {\code{[ block-1 ]}\\\code{c = 30}};
+    \node[block, align=center] (b2) at (2, 4) {\code{[ block-2 ]}};
+    \node[block, align=center] (b3) at (0, 2) {\code{[ block-3 ]}\\\code{c = 0}};
+    \node[block, align=center] (b4) at (3, 2) {\code{[ block-4 ]}\\\code{c = 100}};
+    \node[block, align=center] (b5) at (0, 0.5) {\code{[ block-5 ]}};
+    \draw[arrow] (b0) to node [left, pos=0.55] {\code{a < 10}} (b1);
+    \draw[arrow] (b0) to node [right, pos=0.5] {\code{a >= 10}} (b2);
+    \draw[arrow] (b1) to [bend right] (b5);
+    \draw[arrow] (b2) to node [left, pos=0.5] {\code{b != 0xdeadbeef}} (b3);
+    \draw[arrow] (b2) to node [right, pos=0.5] {\code{b == 0xdeadbeef}} (b4);
+    \draw[arrow] (b3) to (b5);
+    \draw[arrow] (b4) to (b5);
+  \end{tikzpicture}
+\end{center}
+\end{frame}
+
+\begin{frame}
+\frametitle{Example Program - Analysis}
+From the Control-Flow Graph, we can see there are six blocks, or six different locations, in our computer program. These locations are: \texttt{block-0}, \texttt{block-1}, \texttt{block-2}, \texttt{block-3}, \texttt{block-4}, and \texttt{block-5}.
+
+The next step is to determine which blocks are encountered during the execution of the program under test. If a block is executed, we will consider that block, "Covered." We can do this by inserting a special function at the beginning of each block. Each time a block is covered, this function will execute, and the calling block is added to a set of covered blocks.
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Example Program - COVER()}
+
+Control-Flow Graph with \texttt{COVER()} functions.
+
+\begin{center}
+  \begin{tikzpicture}
+    \node[block, align=center] (b0) at (0, 6) {\code{[ block-0 ]}\\\code{COVER(block-0)}\\\code{a = user\_input0()}\\\code{b = user\_input1()}};
+    \node[block, align=center] (b1) at (-2, 4) {\code{[ block-1 ]}\\\code{COVER(block-1)}\\\code{c = 30}};
+    \node[block, align=center] (b2) at (2, 4) {\code{[ block-2 ]}\\\code{COVER(block-2)}};
+    \node[block, align=center] (b3) at (0, 2) {\code{[ block-3 ]}\\\code{COVER(block-3)}\\\code{c = 0}};
+    \node[block, align=center] (b4) at (3, 2) {\code{[ block-4 ]}\\\code{COVER(block-4)}\\\code{c = 100}};
+    \node[block, align=center] (b5) at (0, 0.5) {\code{[ block-5 ]}\\\code{COVER(block-5)}};
+    \draw[arrow] (b0) to node [left, pos=0.55] {\code{a < 10}} (b1);
+    \draw[arrow] (b0) to node [right, pos=0.5] {\code{a >= 10}} (b2);
+    \draw[arrow] (b1) to [bend right] (b5);
+    \draw[arrow] (b2) to node [left, pos=0.5] {\code{b != 0xdeadbeef}} (b3);
+    \draw[arrow] (b2) to node [right, pos=0.5] {\code{b == 0xdeadbeef}} (b4);
+    \draw[arrow] (b3) to (b5);
+    \draw[arrow] (b4) to (b5);
+  \end{tikzpicture}
+\end{center}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Example Program - Instrumentation and Coverage}
+Our instrumentation will now tell us what blocks we cover during an execution of the program. For example, if we supply the value \texttt{5} to this program as \texttt{user\_input0()}, we will cover blocks \texttt{block-0}, \texttt{block-1}, and \texttt{block-5}.
+
+We illustrate this on the next slide.
+\end{frame}
+
+
+\begin{frame}[fragile]
+\frametitle{Example Program - COVER()}
+
+Blocks covered with \texttt{user\_input0() == 5}.
+
+\begin{center}
+  \begin{tikzpicture}
+    \node[blockhighlight, align=center] (b0) at (0, 6) {\code{[ block-0 ]}\\\code{COVER(block-0)}\\\code{a = user\_input0()}\\\code{b = user\_input1()}};
+    \node[blockhighlight, align=center] (b1) at (-2, 4) {\code{[ block-1 ]}\\\code{COVER(block-1)}\\\code{c = 30}};
+    \node[block, align=center] (b2) at (2, 4) {\code{[ block-2 ]}\\\code{COVER(block-2)}};
+    \node[block, align=center] (b3) at (0, 2) {\code{[ block-3 ]}\\\code{COVER(block-3)}\\\code{c = 0}};
+    \node[block, align=center] (b4) at (3, 2) {\code{[ block-4 ]}\\\code{COVER(block-4)}\\\code{c = 100}};
+    \node[blockhighlight, align=center] (b5) at (0, 0.5) {\code{[ block-5 ]}\\\code{COVER(block-5)}};
+    \draw[arrow] (b0) to node [left, pos=0.5] {\code{a < 10}} (b1);
+    \draw[arrow] (b0) to node [right, pos=0.5] {\code{a >= 10}} (b2);
+    \draw[arrow] (b1) to [bend right] (b5);
+    \draw[arrow] (b2) to node [left, pos=0.5] {\code{b != 0xdeadbeef}} (b3);
+    \draw[arrow] (b2) to node [right, pos=0.5] {\code{b == 0xdeadbeef}} (b4);
+    \draw[arrow] (b3) to (b5);
+    \draw[arrow] (b4) to (b5);
+  \end{tikzpicture}
+\end{center}
+\end{frame}
+
+
+\begin{frame}
+\frametitle{Bringing It Together}
+Coverage-based fuzzers favor inputs which cover additional blocks. In our example programs, if we supply the inputs \texttt{1}, \texttt{2}, \texttt{3}, \texttt{4}, up to \texttt{9} for \texttt{user\_input0()}, we always cover the blocks \texttt{{block-0, block-1, block-5}}. Our fuzzer may begin by supplying the values \texttt{{user\_input0 = 0, user\_input1 = 0}}, and then randomly change one of these numbers. Once we supply a value for \texttt{user\_input0()} which is \texttt{>= 10}, our instrumentation will inform us we have covered new blocks.
+
+The fuzzer saves inputs to its corpus, the set of inputs it continues to mutate, when inputs cover new code. Inputs that cover and exercise the same code the fuzzer has already tested are discarded. This allows the fuzzer more quickly discover new inputs which explore new parts of the program under test.
+\end{frame}
+
+\section{Symbolic Execution}
+\begin{frame}
+\frametitle{Symbolic Execution}
+In example in the Coverage-based fuzzing section, you will notice the condition \texttt{b == 0xdeadbeef}. If the program is reading a 32-bit number, and the fuzzer is changing this number randomly, it will require the program an average of \(2^31\) executions to discover this input. That's 2,147,483,648 executions. These difficult-to-fuzz conditions and constraints are where symbolic execution shines.
+
+In a normal program execution, we use discrete values, referred to as concrete values. \texttt{1}, \texttt{37}, and \texttt{0xaabbccdd} are all concrete values. Symbolic execution allows us to replace discrete values with, "Symbolic values," or values without a concrete value. A symbolic value has no real value on its own. We can think of it as a placeholder value that means, "There is some value here, but we don't know what it is yet."
+\end{frame}
+
+\begin{frame}
+\frametitle{Symbolic Execution}
+In addition to introducing symbolic values, symbolic execution also builds up path constraints. Path constraints are a set of expressions, equalities and inequalities, that are true for a path in the program. \texttt{A == 10}, \texttt{A + B < 20} and \texttt{(A {\&} 0xff) + B > 0x100} are all examples of constraints we may find in the path constraints of a symbolic execution engine.
+
+We need to track all of our program's variables, some of which may be symbolic, and our path constraints, together as we symbolically execute our program. We will refer to the collection of these items as, "Symbolic State."
+\end{frame}
+
+\subsection{An Example Symbolic Execution}
+
+\begin{frame}
+\frametitle{An Example Symbolic Execution}
+Returning to our example program, we will perform an example symbolic execution, one step at a time. We begin by replacing the result of \texttt{user\_input0()} with \texttt{A}, and \texttt{user\_input1()} with \texttt{B}, so that at the end of \texttt{block-0} our symbolic execution may be tracking the following values:
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Symbolic Execution: Step 1}
+\begin{columns}
+  \column{0.4\textwidth}
+  \begin{lstlisting}[basicstyle=\tiny]
+
+state0={
+  location=post block-0
+  variables={a=A, b=B},
+  pathConstraints={}
+}
+  \end{lstlisting}
+  \column{0.6\textwidth}
+    \begin{tikzpicture}
+      \node[block, align=center] (b0) at (0, 6) {\code{[ block-0 ]}\\\code{a = user\_input0()}\\\code{b = user\_input1()}};
+    \end{tikzpicture}
+\end{columns}
+Here we have the symbolic state as it exists at the conclusion of symbolic execution of the first block. In our symbolic execution, our symbolic execution engine has returned \texttt{A} for \texttt{user\_input0()}, and \texttt{B} for \texttt{user\_input0()}.
+\par
+In a real program, if we read in bytes from a file called, \texttt{input\_file.txt}, we might make each individual byte of that file its own separate symbolic value, perhaps naming them \texttt{input\_file.txt\_0x1}, \texttt{input\_file.txt\_0x2}, and so on.
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Symbolic Execution: Step 2}
+\begin{columns}
+  \column{0.4\textwidth}
+  \begin{lstlisting}[basicstyle=\tiny]
+state0={
+  location=post block-1
+  variables={a=A, b=B, C=30},
+  pathConstraints={A<10}
+}
+state1={
+  location=post block-2
+  variables={a=A, b=B},
+  pathConstraints={A>=10}
+}
+  \end{lstlisting}
+  \column{0.6\textwidth}
+    \begin{tikzpicture}
+    \node[block, align=center] (b0) at (0, 6) {\code{[ block-0 ]}\\\code{a = user\_input0()}\\\code{b = user\_input1()}};
+    \node[block, align=center] (b1) at (-1.2, 4) {\code{[ block-1 ]}\\\code{c = 30}};
+    \node[block, align=center] (b2) at (1.2, 4) {\code{[ block-2 ]}};
+    \draw[arrow] (b0) to node [left, pos=0.55] {\code{a < 10}} (b1);
+    \draw[arrow] (b0) to node [right, pos=0.5] {\code{a >= 10}} (b2);
+    \end{tikzpicture}
+\end{columns}
+As we exit \texttt{block-0}, we encounter a conditional branch. One path is guarded by \texttt{a < 10}, and one path is guarded by \texttt{a >= 10}. We copy, or, "Fork," our symbolic state, so that we have two identical copies, and add the conditions to our path constraints. We then execute the following blocks, \texttt{block-1} and \texttt{block-2}.
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Symbolic Execution: Step 3}
+\begin{columns}
+  \column{0.4\textwidth}
+  \begin{lstlisting}[basicstyle=\tiny]
+state0={
+  location=post block-1
+  variables={a=A, b=B, C=30},
+  pathConstraints={A<10}
+}
+state1={
+  location=post block-3
+  variables={a=A, b=B, C=0},
+  pathConstraints={A>=10, B!=0xdeadbeef}
+}
+state1={
+  location=post block-4
+  variables={a=A, b=B, C=100},
+  pathConstraints={A>=10, B!=0xdeadbeef}
+}
+  \end{lstlisting}
+  \column{0.6\textwidth}
+    \begin{tikzpicture}
+    \node[block, align=center] (b0) at (0, 5.5) {\code{[ block-0 ]}\\\code{a = user\_input0()}\\\code{b = user\_input1()}};
+    \node[block, align=center] (b1) at (-1.2, 4) {\code{[ block-1 ]}\\\code{c = 30}};
+    \node[block, align=center] (b2) at (1.2, 4) {\code{[ block-2 ]}};
+    \node[block, align=center] (b3) at (0, 2.5) {\code{[ block-3 ]}\\\code{c = 0}};
+    \node[block, align=center] (b4) at (2, 2.5) {\code{[ block-4 ]}\\\code{c = 100}};
+    \draw[arrow] (b0) to node [left, pos=0.55] {\code{a < 10}} (b1);
+    \draw[arrow] (b0) to node [right, pos=0.5] {\code{a >= 10}} (b2);
+    \draw[arrow] (b2) to node [left, pos=0.5] {\code{b != 0xdeadbeef}} (b3);
+    \draw[arrow] (b2) to node [right, pos=0.5] {\code{b == 0xdeadbeef}} (b4);
+    \end{tikzpicture}
+\end{columns}
+Now that we know how to fork state and add path constraints, we can fork state after \texttt{block-2}, and symbolically execute \texttt{block-3} and \texttt{block-4}.
+\end{frame}
+
+\begin{frame}[fragile]
+\frametitle{Symbolic Execution: Step 4}
+\begin{columns}
+  \column{0.4\textwidth}
+  \begin{lstlisting}[basicstyle=\tiny]
+state0={
+  location=post block-5
+  variables={a=A, b=B, C=30},
+  pathConstraints={A<10}
+}
+state1={
+  location=post block-5
+  variables={a=A, b=B, C=0},
+  pathConstraints={A>=10, B!=0xdeadbeef}
+}
+state1={
+  location=post block-5
+  variables={a=A, b=B, C=100},
+  pathConstraints={A>=10, B!=0xdeadbeef}
+}
+  \end{lstlisting}
+  \column{0.6\textwidth}
+    \begin{tikzpicture}
+    \node[block, align=center] (b0) at (0, 5.5) {\code{[ block-0 ]}\\\code{a = user\_input0()}\\\code{b = user\_input1()}};
+    \node[block, align=center] (b1) at (-1.2, 4) {\code{[ block-1 ]}\\\code{c = 30}};
+    \node[block, align=center] (b2) at (1.2, 4) {\code{[ block-2 ]}};
+    \node[block, align=center] (b3) at (0, 2.5) {\code{[ block-3 ]}\\\code{c = 0}};
+    \node[block, align=center] (b4) at (2, 2.5) {\code{[ block-4 ]}\\\code{c = 100}};
+    \node[block, align=center] (b5) at (0, 1) {\code{[ block-5 ]}};
+    \draw[arrow] (b0) to node [left, pos=0.55] {\code{a < 10}} (b1);
+    \draw[arrow] (b0) to node [right, pos=0.5] {\code{a >= 10}} (b2);
+    \draw[arrow] (b1) to [bend right] (b5);
+    \draw[arrow] (b2) to node [left, pos=0.5] {\code{b != 0xdeadbeef}} (b3);
+    \draw[arrow] (b2) to node [right, pos=0.5] {\code{b == 0xdeadbeef}} (b4);
+    \draw[arrow] (b3) to (b5);
+    \draw[arrow] (b4) to (b5);
+    \end{tikzpicture}
+\end{columns}
+And finally, we execute all symbolic states forward until the function ends.
+\end{frame}
+
+\begin{frame}
+\frametitle{Resulting Path Constraints}
+We are left with three states, with three different sets of path constraints:
+
+\begin{itemize}
+  \item \texttt{{A < 10}}
+  \item \texttt{{A >= 10, B != 0xdeadbeef}}
+  \item \texttt{{A >= 10, B == 0xdeadbeef}}
+\end{itemize}
+
+Conveniently, these path constraints accurately and completely describe the which values our inputs must have in order to traverse all of the paths in this program.
+\end{frame}
+
+\begin{frame}
+\frametitle{Using a Solver}
+With one final piece of technology, an SMT solver, we can find inputs which satisfy each of these sets of path constraints individually. An SMT solver takes a set of constraints, such as ours, and returns values for variables which satisfy the path constraints. Any value can be returned, so long as the constraints are satisfied. In an example run, perhaps the following values are returned:
+
+\begin{itemize}
+  \item \texttt{{A < 10} -> {A = 5}}
+  \item \texttt{{A >= 10, B != 0xdeadbeef} -> {A = 20, B = 0}}
+  \item \texttt{{A >= 10, B == 0xdeadbeef} -> {A = 15, B = 0xdeadbeef}}
+\end{itemize}
+
+In this example, symbolic execution was able to discover that \texttt{B = 0xdeadbeef} in fewer steps that coverage-based fuzzing. In practice, a symbolic executor would complete full code-coverage of this example program in a fraction of the time of a well-performing fuzzer.
+\end{frame}
+
+\begin{frame}
+\frametitle{Symbolic Execution Advantage}
+Symbolic execution's core advantage is that its ability to summarize each valid path in regards to input, and create path constraints which completely describe each path in regards to those same inputs. When we feed a concrete input into our program, that concrete input describes one of many inputs which may traverse a path through the program, and we will often create many inputs which traverse the same paths over, and over, again. A symbolic execution engine visits these paths just one time, and builds path constraints which can succintly describe billions of inputs in a short amount of time.
+\end{frame}
+
+
+\section{Combining Fuzzing and Symbolic Execution}
+\begin{frame}
+\frametitle{Combining Fuzzing and Symbolic Execution}
+MAYHEM Sword combines best-of-breed coverage-based fuzzing with an advanced symbolic executor to quickly discover inputs which test more code, and find bugs faster. MAYHEM Sword accomplishes this by sharing inputs between its fuzzer and symbolic executor.
+
+The symbolic executor takes inputs from the fuzzer, follows the same path as described by the input up to a certain point, and then uses symbolic execution to fork and discover new inputs which traverse edges our fuzzer has a hard time reasoning about. Likewise, the fuzzer can take inputs from the symbolic executor, and quickly modify them to test the program and explore new blocks which are easy to reach.
+\end{frame}
+
+\end{document}

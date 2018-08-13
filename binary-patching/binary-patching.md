@@ -6,10 +6,12 @@ When testing of 3rd-party, or legacy applications, is required, source code may 
 
 ## Requirements
 
-For this tutorial, you will need
+For this tutorial, you will need:
+
+  * A working copy of MAYHEM, with the MAYHEM client installed on the command line.
   * Reverse-engineering expertise. This is an advanced tutorial, and you should be comfortable with assembly-level code.
   * A disassembler with the ability to patch instructions. We will be using [Binary Ninja](https://binary.ninja).
-  * A hex editor. We will be using [Hex Fiend](https://ridiculousfish.com/hexfiend/), a free hex editor for Mac OS X.
+  * The example files that are referenced throughout the slide deck.
 
 ## Why patch binaries
 
