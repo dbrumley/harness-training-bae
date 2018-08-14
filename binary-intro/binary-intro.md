@@ -3,9 +3,9 @@
 This tutorial is designed to be the first in a series of tutorials on how to use MAYHEM to work with binary applications. In this tutorial, we will cover the six steps to analyzing a binary with MAYHEM:
 
   1. Confirm that you can run the program on the command line.
-  2. Package up the application Mayhem package /usr/bin/objdump mydir.
+  2. Package up the application `mayhem package /usr/bin/objdump mydir`.
   3. Edit configuration to specify the command line you ran
-  4. Upload the package to the Mayhem cloud service and start mayhem NOTE: WHERE DO YOU GET THE URL? Mayhem upload mydir —start-sword
+  4. Upload the package to the Mayhem cloud service and start mayhem NOTE: WHERE DO YOU GET THE URL? `cat .mayhem-client.cfg`
   5. Go to the UI and watch Mayhem test the program!
   6. Download test cases
 
@@ -30,7 +30,7 @@ In order for our binary to be analyzed with MAYHEM, the following properties mus
   * The binary application must run on an architecture and operating system supported by MAYHEM.
   * You are looking for errors in the binary you are testing.
 
-## Packaging `objdump`
+## Installing `objdump`
 
 `objdump` is an application distributed with GNU binutils to dump and display information about programs stored in common binary executable file formats. We will package `objdump` for MAYHEM, and upload `objdump` to our instance of MAYHEM Sword.
 
@@ -177,9 +177,9 @@ For the purposes of this tutorial, we are only concerned with the `"target_args"
             ]
 ```
 The `"target"` field tells MAYHEM where the target binary is located inside the configuration package.
-The `"library_path"` field tells MAYHM where the library dependencies are located for the target. 
-Both of these are automatically populated by the `mayhem package` command. 
-It is important to note that any extra files required to be packaged along with the binary (e.g. configuration files), must be placed in root. 
+The `"library_path"` field tells MAYHM where the library dependencies are located for the target.
+Both of these are automatically populated by the `mayhem package` command.
+It is important to note that any extra files required to be packaged along with the binary (e.g. configuration files), must be placed in root.
 
 # Step 4: Upload the Application.
 
