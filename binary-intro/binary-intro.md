@@ -161,7 +161,6 @@ root@d5ec5618a4ed:~# cat /tmp/objdump-wng7lsdf/config.json
             "target_args": [
                 "@@"
             ],
-            "target_input": "@@",
             "library_path": "root/usr/lib/x86_64-linux-gnu:root/lib/x86_64-linux-gnu",
             "target": "root/usr/bin/objdump"
         }
@@ -177,6 +176,10 @@ For the purposes of this tutorial, we are only concerned with the `"target_args"
                 ""@@"
             ]
 ```
+The `"target"` field tells MAYHEM where the target binary is located inside the configuration package.
+The `"library_path"` field tells MAYHM where the library dependencies are located for the target. 
+Both of these are automatically populated by the `mayhem package` command. 
+It is important to note that any extra files required to be packaged along with the binary (e.g. configuration files), must be placed in root. 
 
 # Step 4: Upload the Application.
 
@@ -184,9 +187,10 @@ We're now going to upload this package to MAYHEM. We need the URL for the runnin
 
 To upload, I will type:
 
-    mayhem upload --start-sword -u http://192.168.99.101:32434/ /tmp/objdump-wng7lsdf
+    mayhem upload --start-sword -u http://192.168.99.101:32434/ /tmp/objdump-wng7lsdf --duration 300
 
 `--start-sword` tells MAYHEM to start fuzzing as soon as the binary is uploaded, and `-u` allows us to specify a URL to our specific instance of MAYHEM.
+`--duration` specifies the number of seconds to run the analysis for.
 
 # Step 5: Observe MAYHEM Running in the User Interface.
 
