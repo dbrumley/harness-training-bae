@@ -125,9 +125,11 @@ cp resources/utf8test.xml /tmp/tinyxml2-harness/corpus/
 ```
 
 Then upload the package and use the `--start-sword` option to start testing!
+Also note that the command below limits the duration of the test for this
+particular binary (just for time's sake in this lab).
 
 ```
-mayhem upload /tmp/tinyxml2-harness/ --start-sword
+mayhem upload /tmp/tinyxml2-harness/ --start-sword  --duration 240
 ```
 
 If you used tinyxml2 version 2.0.1, you will probably see a crash (though it
