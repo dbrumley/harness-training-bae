@@ -41,7 +41,7 @@ Here is an example config:
 ```
 
 ### Example: Bacsrv
-At FAS we operate on the binary level, and know nothing about the target
+At FAS we operate on the binary level, and know nothing about the target.
 For the purposes of this lab, we assume the student also knows nothing
 about the target.
 
@@ -98,7 +98,7 @@ We see this uses UDP.
 * Run the help menu to see what capabilities are available.  Always look
 for the option to run the target in the foreground (ie don't daemonize).
 * Strace can be used to identify missing configuration files or modules.
-* A good starting corpus is very important.  A good place to start is by
+* A good starting corpus is very important. A good place to start is by
 capturing real network requests.
 
 ### Exercise: Lighttpd
