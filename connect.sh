@@ -13,7 +13,7 @@ KEYLOC=~/.ssh/mayhem-training
 if [ ! -f $KEYLOC ]; then
     echo [+] Creating SSH key
     cat > $KEYLOC <<- EOM
-    -----BEGIN RSA PRIVATE KEY-----
+-----BEGIN RSA PRIVATE KEY-----
 MIIEpAIBAAKCAQEA7ETlh3kuV/rQYHmOOeapc0Bwgx93OxnVY2wR1FnbzrZNhX86
 4k63OXDnXKZKC1VVxd6mPAGcK8jivLeHSeaO1WCtInCtoLLHuLu+WJ6PdwdIcxz/
 g9n89umcGU65EiPN2aj7llcW05C9Jn2N8Ds/6hAUS49K5VfM2Oz5A45isRVWcd6g
