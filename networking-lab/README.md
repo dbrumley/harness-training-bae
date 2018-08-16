@@ -134,39 +134,39 @@ the correct information:
 
     a. Run the target to see if it provides anything useful.
 
-```
-$ ./bacserv
-BACnet Server Demo
-BACnet Stack Version 0.9.1
-BACnet Device ID: 260001
-Max APDU: 1476
-```
+    ```
+    $ ./bacserv
+    BACnet Server Demo
+    BACnet Stack Version 0.9.1
+    BACnet Device ID: 260001
+    Max APDU: 1476
+    ```
 
-Unfortunately, the above output doesn't tell us anything.
+    Unfortunately, the above output doesn't tell us anything.
 
     b.  Run strace to identify the port and protocol.
 
-```
-strace -f -o /tmp/slog ./bacsrv
-```
+    ```
+    strace -f -o /tmp/slog ./bacsrv
+    ```
 
-`-f` indicates follow children, and `-o` is the file our results are written to.
+    `-f` indicates follow children, and `-o` is the file our results are written to.
 
     c.  Because this is a server, we know it binds to a port.  Grep for bind in the results:
-```
-$ grep bind /tmp/slog
-20399 bind(3, {sa_family=AF_INET, sin_port=htons(47808), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
-```
-We see that the target is IPV4 (AF_INET) and bound to port 47808.
+    ```
+    $ grep bind /tmp/slog
+    20399 bind(3, {sa_family=AF_INET, sin_port=htons(47808), sin_addr=inet_addr("0.0.0.0")}, 16) = 0
+    ```
+    We see that the target is IPV4 (AF_INET) and bound to port 47808.
 
     d.  To identify the protocol, grep for `socket`.
-```
-$ grep socket /tmp/slog
-20399 socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
-20399 socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
-20399 socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP) = 3
-```
-We see this uses UDP.
+    ```
+    $ grep socket /tmp/slog
+    20399 socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
+    20399 socket(PF_INET, SOCK_DGRAM, IPPROTO_IP) = 3
+    20399 socket(PF_INET, SOCK_DGRAM, IPPROTO_UDP) = 3
+    ```
+    We see this uses UDP.
 
 4.  After filling this information into the config file, the package is ready.
 To begin fuzzing run:
