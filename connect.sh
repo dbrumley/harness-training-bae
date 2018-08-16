@@ -51,7 +51,7 @@ USER=user
 HOST=$1
 INTERNAL_IP=$(ssh $USER@$HOST hostname -I | cut -f 1 -d ' ')
 echo "internal ip is $INTERNAL_IP"
-INTERNAL_UI_PORT=$(ssh $USER@$HOST kubectl get svc -o go-template='{{range .items}}{{range.spec.ports}}{{if .nodePort}}{{.nodePort}}{{"\n"}}{{end}}{{end}}{{end}}')
+INTERNAL_UI_PORT=$(ssh $USER@$HOST kubectl get svc -o go-template=\'{{range .items}}{{range.spec.ports}}{{if .nodePort}}{{.nodePort}}{{\"\\n\"}}{{end}}{{end}}{{end}}\')
 echo "port is $INTERNAL_UI_PORT"
 
 echo [+] Port forwarding done, connect to http://localhost:30001 for the Mayhem web UI
