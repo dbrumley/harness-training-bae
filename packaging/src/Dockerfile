@@ -1,6 +1,6 @@
 FROM debian:jessie-slim
 
-RUN apt-get -y update && apt-get -y install build-essential cmake
+RUN apt-get -y update && apt-get -y install build-essential cmake libpcre3-dev
 
 WORKDIR /root
 
@@ -21,13 +21,14 @@ COPY ex_app/ ./ex_app/
 COPY ex_app.cxx mylib.cxx mylib.hxx ./
 
 RUN c++ -std=c++11 -fno-stack-protector -shared -fPIC mylib.cxx -o libmylib.so && \
-    c++ -std=c++11 -fno-stack-protector -I/root/pugixml-1.9/src ex_app.cxx /root/libmyxml.so.1.9 libmylib.so -o ex_app.exe && \
+    c++ -std=c++11 -fno-stack-protector -I/root/pugixml-1.9/src ex_app.cxx /root/libmyxml.so.1.9 libmylib.so -lpcre -o ex_app.exe && \
     ldd ex_app.exe && \
     mv /root/libmyxml.so* libmylib.so ex_app/libs/ && \
     mv ex_app.exe ex_app/ex_app && \
     chmod a+x ex_app/ex_app ex_app/run.sh
 
-RUN ./ex_app/run.sh /dev/null  && \
+RUN touch /etc/ex_app_config && \
+    ./ex_app/run.sh /dev/null && \
     printf '\4\0\0\0AAAAAAAA'   > /tmp/test && ./ex_app/run.sh /tmp/test && \
     printf '\4\377\0\0AAAAAAAA' > /tmp/test && ./ex_app/run.sh /tmp/test && \
     { printf '\1\1\1\377%0100d' 1 > /tmp/test && ./ex_app/run.sh /tmp/test || true; } && \

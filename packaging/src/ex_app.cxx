@@ -3,6 +3,24 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <pcre.h>
+
+bool pcre_find(const char *regex, const char *buf) {
+  const char *pcreErrorStr;
+  int pcreErrorOffset;
+  pcre *reCompiled = pcre_compile(regex, 0, &pcreErrorStr, &pcreErrorOffset, NULL);
+  if(reCompiled == NULL) {
+    printf("ERROR: pcre: %s\n", pcreErrorStr);
+    exit(1);
+  }
+  int sub;
+  int ret = pcre_exec(reCompiled, NULL, buf, strlen(buf), 0, 0, &sub, 1);
+  if(ret < 0) {
+    return false;
+  } else {
+    return true;
+  }
+}
 
 pugi::xml_node get_one(pugi::xml_node &root, const char *query) {
   pugi::xpath_node_set x = root.select_nodes(query);
@@ -53,8 +71,8 @@ int main(int argc, char *argv[]) {
     memset(buf, 0, 128);
     fread(buf, 1, 128, f);
     fclose(f);
-    if(strncmp("magic foo", buf, 3) == 0) need_foo = false;
-    if(strncmp("magic bar", buf, 3) == 0) need_bar = false;
+    if(pcre_find("mag[ic][ic] foo", buf)) need_foo = false;
+    if(pcre_find("mag[ic][ic] bar", buf)) need_bar = false;
   }
 
   if(need_foo || need_bar) {
@@ -65,6 +83,15 @@ int main(int argc, char *argv[]) {
   if(argc < 3 || strcmp(argv[1], "run") != 0) {
     fprintf(stderr, "Usage: %s run paths...\n", argv[0]);
     return 1;
+  }
+
+  {
+    FILE *f = fopen("/etc/ex_app_config", "r");
+    if(!f) {
+      fprintf(stderr, "missing the global config file /etc/ex_app_config!\n");
+      return 1;
+    }
+    fclose(f);
   }
 
   for(int i = 2; i < argc; ++i) {
