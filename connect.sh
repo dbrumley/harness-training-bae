@@ -49,12 +49,11 @@ fi
 # port forward and connect
 USER=user
 HOST=$1
-INTERNAL_IP=$(ssh $USER@$HOST hostname -I | cut -f 1 -d ' ')
-echo "internal ip is $INTERNAL_IP"
-INTERNAL_UI_PORT=$(ssh $USER@$HOST kubectl get svc -o go-template=\'{{range .items}}{{range.spec.ports}}{{if .nodePort}}{{.nodePort}}{{\"\\n\"}}{{end}}{{end}}{{end}}\')
-echo "port is $INTERNAL_UI_PORT"
+#INTERNAL_IP=$(ssh -i $KEYLOC $USER@$HOST hostname -I | cut -f 1 -d ' ')
+INTERNAL_IP=127.0.0.1
+INTERNAL_UI_PORT=$(ssh -i $KEYLOC $USER@$HOST kubectl get svc -o go-template=\'{{range .items}}{{range.spec.ports}}{{if .nodePort}}{{.nodePort}}{{\"\\n\"}}{{end}}{{end}}{{end}}\')
 
+echo [+] Forwarding $INTERNAL_IP:$INTERNAL_UI_PORT
 echo [+] Port forwarding done, connect to http://localhost:30001 for the Mayhem web UI
 echo [+] SSH-ing into your vm, port forwarding will stay up as long as your session is running
-#ssh $USER@$HOST -L 8081:[::1]:$INTERNAL_UI_PORT 
 ssh -i $KEYLOC $USER@$HOST -L 30001:$INTERNAL_IP:$INTERNAL_UI_PORT
