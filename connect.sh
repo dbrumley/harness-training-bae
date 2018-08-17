@@ -41,9 +41,8 @@ uRWdBQKBgQDbQDmQnURTRr5TDUCc21HjmFa+0h3cBKf4m6pO4tEo4DjEIeKd8FQu
 sYatfdmddtvvlgKWfTm5puf7RjhBq3xyqBvVFlkm4tjs2bhU45M4gA==
 -----END RSA PRIVATE KEY-----
 EOM
-    #TODO: insert key here
     #echo key > $KEYLOC
-    sudo chmod 400 $KEYLOC
+    chmod 400 $KEYLOC
 fi
 
 # port forward and connect
