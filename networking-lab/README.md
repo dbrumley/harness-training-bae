@@ -168,14 +168,9 @@ To begin fuzzing run:
 what switches or capabilities are available in the target.  Always look
 for the option to run the target in the foreground (i.e. don't daemonize).
 * Strace can be used to identify missing configuration files or modules.
-<<<<<<< HEAD
-* A good starting corpus is very important. A good place to start is by
-capturing real network requests.
-=======
 * A good starting corpus is very important as it avoids having mayhem spend
 time trying to figure out what normal input looks like.  A good place to start
 is by capturing real network requests.
->>>>>>> 85de7b2e7b793f4b75789007e94ff456327d461d
 
 ### Exercise: Lighttpd
 There are two variants of the lighttpd exercise: moderate and hard.
