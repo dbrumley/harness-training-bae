@@ -1,0 +1,14 @@
+{
+    "fuzzers" : [
+        {
+        "target" : "root/nginx",
+        "network" : {
+            "url" : "tcp://localhost:8080",
+            "timeout" : 2000,
+            "is_client" : false
+        },
+        "target_args" : ["-p", ".", "-c", "root/nginx.conf"],
+        "library_path": "root/lib"
+        }
+    ]
+}

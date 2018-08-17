@@ -120,10 +120,11 @@ networks.  Bacsrv implements this protocol.
 2. Run `mayhem package` to pull all the dependencies for the binary
   and create a default Mayhem configuration file.
 
-3. Edit the network config.  Follow the below steps to figure out
+3. Edit the config.  Follow the below steps to figure out
 the correct information:
 
     a. Run the target to see if it provides anything useful.
+    Does the target require any commandline arguments?
 
     ```
     $ ./bacserv
