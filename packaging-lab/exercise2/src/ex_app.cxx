@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <pcre.h>
+#include <libgen.h>
 
 bool pcre_find(const char *regex, const char *buf) {
   const char *pcreErrorStr;
@@ -38,7 +39,6 @@ int main(int argc, char *argv[]) {
     fprintf(stderr, "missing env var(s)\n");
     return 1;
   }
-
   pugi::xml_parse_result result = doc.load_file(getenv("CONFIG_XML"));
   if(!result) {
     fprintf(stderr, "failed to load config xml\n");
@@ -50,9 +50,14 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  result = doc.load_file(get_one(doc, "/config/import").text().get());
+  char *pwd = dirname(getenv("CONFIG_XML"));
+  strcat(pwd, "/");
+  const char *target = get_one(doc, "/config/import").text().get();
+  strcat(pwd, target);
+
+  result = doc.load_file(pwd);
   if(!result) {
-    fprintf(stderr, "failed to load config aux xml\n");
+    fprintf(stderr, "failed to load config aux xml and instead loaded %s\n",pwd);
     return 1;
   }
 
