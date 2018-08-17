@@ -71,7 +71,7 @@ how to fill out the `target_args` field.
     ]
 }
 ```
-3. Add the network fields to the config.  NGINX listens on port 80 and is
+3. Add the network fields to the config.  NGINX listens on port 8080 and is
 TCP.
 ```
 {
