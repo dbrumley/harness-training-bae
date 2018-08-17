@@ -1,0 +1,14 @@
+{
+    "fuzzers": [
+        {
+            "library_path": "root/usr/lib/x86_64-linux-gnu:root/home/user/pkg/exercise2/ex_app/libs:root/lib/x86_64-linux-gnu:root/home/user/pkg/exercise2/ex_app/libs/",
+	    "env" : {"EAPP_RESOURCES" : "root/resources", "CONFIG_XML" : "root/config.xml"},
+            "target_args": [
+                "run", "@@"
+            ],
+            "libfuzzer": false,
+            "asan": false,
+            "target": "root/home/user/pkg/exercise2/ex_app/ex_app"
+        }
+    ]
+}
