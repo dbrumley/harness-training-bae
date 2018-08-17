@@ -1,0 +1,9 @@
+{
+    "fuzzers": [
+        {
+            "target_args": [],
+            "target": "root/usr/sbin/lighttpd",
+            "library_path": "root/usr/lib/x86_64-linux-gnu:root/lib/x86_64-linux-gnu"
+        }
+    ]
+}
