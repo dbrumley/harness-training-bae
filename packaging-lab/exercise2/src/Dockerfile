@@ -23,6 +23,7 @@ COPY ex_app.cxx mylib.cxx mylib.hxx ./
 RUN c++ -std=c++11 -fno-stack-protector -shared -fPIC mylib.cxx -o libmylib.so && \
     c++ -std=c++11 -fno-stack-protector -I/root/pugixml-1.9/src ex_app.cxx /root/libmyxml.so.1.9 libmylib.so -lpcre -o ex_app.exe && \
     ldd ex_app.exe && \
+    mkdir -p ex_app/libs && \
     mv /root/libmyxml.so* libmylib.so ex_app/libs/ && \
     mv ex_app.exe ex_app/ex_app && \
     chmod a+x ex_app/ex_app ex_app/run.sh

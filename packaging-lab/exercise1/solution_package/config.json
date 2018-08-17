@@ -4,7 +4,6 @@
       "env" : {"USER" : "FAS"},
       "target_args" : [ "config" ],
       "target" : "/root/ex_app",
-      "chdir" : "/root/"
       "network" : {
         "url" : "tcp://localhost:12345",
         "is_client" : false,

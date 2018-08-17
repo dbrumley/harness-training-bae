@@ -46,7 +46,7 @@ void main(int argc, char** argv) {
     printf("Could not find info for user %s!\n", username);
     return;
   }
-  
+
   printf("Running as uid=%d\n", p->pw_uid);
 
   FILE* conf = fopen(argv[1], "r");

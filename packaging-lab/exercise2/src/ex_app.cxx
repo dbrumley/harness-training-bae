@@ -33,12 +33,12 @@ pugi::xml_node get_one(pugi::xml_node &root, const char *query) {
 
 int main(int argc, char *argv[]) {
   pugi::xml_document doc;
-  
+
   if(!(getenv("EAPP_RESOURCES") && getenv("CONFIG_XML"))) {
     fprintf(stderr, "missing env var(s)\n");
     return 1;
   }
-  
+
   pugi::xml_parse_result result = doc.load_file(getenv("CONFIG_XML"));
   if(!result) {
     fprintf(stderr, "failed to load config xml\n");
