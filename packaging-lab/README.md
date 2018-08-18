@@ -74,10 +74,6 @@ order to reach the interesting, buggy sections of code.
 Package the binary and upload to see if the analysis runs successfully to find
 the bugs.
 
-### Exercise 2: Package Relay
-Run through as many of the following targets to see if you can effectively
-package and run the targets to achieve reasonable code coverage. 
-
 ### Conclusion
 Proper packaging of a target is the crux of ensuring Mayhem will know how to 
 properly execute the target under test. Binaries may have several requirements

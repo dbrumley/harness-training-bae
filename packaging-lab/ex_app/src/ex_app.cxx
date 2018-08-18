@@ -90,15 +90,6 @@ int main(int argc, char *argv[]) {
     return 1;
   }
 
-  {
-    FILE *f = fopen("/etc/ex_app_config", "r");
-    if(!f) {
-      fprintf(stderr, "missing the global config file /etc/ex_app_config!\n");
-      return 1;
-    }
-    fclose(f);
-  }
-
   for(int i = 2; i < argc; ++i) {
     FILE *f = fopen(argv[i], "r");
     if(!f) {
