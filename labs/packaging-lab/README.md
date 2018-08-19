@@ -1,7 +1,6 @@
 ## Mayhem Package Lab 
 This lab will cover some more packaging configuration options such as
-environment variables and where to store configuration files. The lab will
-have exercises for the user to practice their knowledge on several targets.
+environment variables and where to store configuration files. 
 
 ### Background
 Mayhem packaging is a critical step in ensuring a binary will perform analysis
@@ -27,13 +26,9 @@ the package's `root` folder will be mounted in the jail at `/root`.
 In general, if one needs to reference paths inside the root folder,
 they can therefore use either `/root/path/to/target` or `root/path/to/target`.
 
-Some programs require running from inside certain directories.
-For those, one can use the `chdir` directive to change the directory from
-which a target is run.
-
 ### Jail Environment
 In addition, when a program launches inside the jail, the user and group
-are fixed to `FAS`. This is useful to note for some programs which require
+are fixed to `fas`. This is useful to note for some programs which require
 knowing which user they run as, such as server applications.
 
 As many programs write to temporary files, the jail allows programs to
@@ -73,6 +68,10 @@ order to reach the interesting, buggy sections of code.
 
 Package the binary and upload to see if the analysis runs successfully to find
 the bugs.
+
+If the package uploads successfully but the analysis does not seem to be 
+achieving much coverage, view the testcase details to see the stdout and 
+figure out what the target is looking for and what is missing from the package
 
 ### Conclusion
 Proper packaging of a target is the crux of ensuring Mayhem will know how to 
