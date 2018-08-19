@@ -1,0 +1,4 @@
+GET / HTTP/1.0
+H: cury/7.52.1
+Aacep: */*
+

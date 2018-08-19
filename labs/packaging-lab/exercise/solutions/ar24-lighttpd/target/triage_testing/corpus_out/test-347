@@ -1,0 +1,5 @@
+GET /gent HTTP/1.1
+tttt: localhost:3000
+Usar-Agent:<cur_/7.52.1
+Accept: */*
+

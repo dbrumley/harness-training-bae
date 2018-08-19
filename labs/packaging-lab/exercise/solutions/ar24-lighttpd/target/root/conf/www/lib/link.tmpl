@@ -1,0 +1,346 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+"http://www.w3.org/TR/html4/DTD/loose.dtd">
+<html>
+<head>
+<title><? echo get_title($cfg, dict_translate("Wireless")); ></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="shortcut icon" href="/130904.1419/favicon.ico" >
+<link href="/130904.1419/style.css" rel="stylesheet" type="text/css">
+<link href="/130904.1419/help.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="jsl10n.cgi"></script>
+<script type="text/javascript" src="/130904.1419/slider-min.js"></script>
+<script type="text/javascript" src="/130904.1419/jsval.js"></script>
+<script type="text/javascript" src="/130904.1419/util.js"></script>
+<script type="text/javascript" src="/130904.1419/network.js"></script>
+<script type="text/javascript" language="javascript1.2" src="/130904.1419/slink.js"></script>
+<script type="text/javascript" src="/130904.1419/js/jquery.js"></script>
+<script type="text/javascript" src="/130904.1419/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/130904.1419/js/jquery.dimensions.js"></script>
+<script type="text/javascript" src="/130904.1419/js/jquery.ui.js"></script>
+<script type="text/javascript" src="/130904.1419/js/jquery.passwd.js"></script>
+<script type="text/javascript" src="/130904.1419/js/jquery.utils.js"></script>
+<script type="text/javascript" src="/130904.1419/help.js"></script>
+<link type="text/css" rel="StyleSheet" href="/130904.1419/bluecurve.css" />
+<script type="text/javascript">
+//<!--
+
+<? 
+     generate_frequency_list("frequencies", $country);
+     generate_speed_list("speeds");
+>
+var cc_dialog = $('<div/>');
+var rxgain="<?echo $rxgain>";
+var af_key_type="<?echo $af_key_type>";
+var rx_chan_freq="<?echo $rx_chan_freq>";
+var tx_chan_freq="<?echo $tx_chan_freq>";
+var af_duplex="<?echo $af_duplex>";
+var rate="<?echo $rate>";
+var txpower = <?echo $txpower>;
+var country = "<?echo $country>";
+
+<? /* Hardware Limits */ >
+var radio_chains = <? echo $radio["chains"]; >;
+var txpower_min = 0;
+var txpower_max = <? echo $radio["txpower_max"]>;
+
+<? /* Regulatory Limits */ >
+var txpower_reg_max = <? echo $txpower_reg_max >;
+
+var globals = {
+	i18n : { }
+};
+
+var l10n_lang = {
+        'speed-0x': '<? echo dict_translate("1/4x (QPSK SISO)"); >',
+        'speed-1x': '<? echo dict_translate("1x (QPSK SISO)"); >',
+        'speed-2x': '<? echo dict_translate("2x (QPSK MIMO)"); >',
+        'speed-4x': '<? echo dict_translate("4x (16QAM MIMO)"); >',
+        'speed-6x': '<? echo dict_translate("6x (64QAM MIMO)"); >',
+        'speed-8x': '<? echo dict_translate("8x (256QAM MIMO)"); >',
+        '_': '_' /* end marker */
+};
+
+function l10n_get(w) {
+        var t = l10n_lang[w];
+        if (t)
+                return t;
+        if (window.console && window.console.log)
+                window.console.log('L10N ERROR: untranslated "' + w + '"');
+        return w;
+}
+
+<? gen_update_check($cfg); >
+
+function doSubmit() {
+	$('#this_form').submit();
+}
+
+function reinit_form(level, leave_rates)
+{
+	switch (level)
+	{
+	case 0:
+	case 1:
+	case 2:
+		rate = init_speeds(rate, "rate");
+		setMaxrate('rate', 'maxrate');
+	case 3:
+		init_frequencies(tx_chan_freq, rx_chan_freq, af_duplex, level == 3);
+	case 4:
+		if (level != 2 && level != 3) {
+			toggleObeyRegulatory();
+		} 
+	}
+}
+
+function init_common() {
+	$('#wmode').val("<? echo $wmode; >");
+	$('#country_ctrl').val(country);
+        $('#rxgain').val("<? echo $rxgain; >");
+        $('#af_key_type').val("<? echo $af_key_type; >");
+	createTXPowerSlider(txpower_max);
+	reinit_form(0);
+}
+
+function is_changeable_country(ccode) {
+	return true;
+/*
+        return <? if ($old_country == $country) { switch($country) {
+		case "840";
+		case "US";
+		case "U2";
+                case "724";
+                case "ES";
+                	echo "false";
+                        break;
+                default;
+                	echo "true";
+                        break;
+                }
+        } else { echo "true"; }
+        >
+*/
+}
+
+function change_country(cc) {
+        cc_dialog.dialog("open");
+}
+
+$(document).ready(function(){
+   	cc_dialog.load('/130904.1419/cc_change.cgi'+'?'+Math.random()*Math.random());
+	init_common();
+
+	cc_dialog.attr('title', "<? echo dict_translate("Change Country"); >");
+	if ($("#country_ctrl").is(':visible')) {
+		var pos = $("#country_ctrl").position();
+		var y = pos.top - $(document).scrollTop();
+		cc_dialog.dialog(
+		{
+                	autoOpen: false,
+			bgiframe: true,
+			modal : true,
+			height : '360',
+			width: 400,
+			resizable : false,
+                        position: ['center', y],
+			buttons: {
+				"<? echo dict_translate("Accept"); >": function() { 
+                                	if (!$('#agreed').is(":checked")) {
+                                        	$('#errmsg').html("<? echo dict_translate("To change country, you must agree to<br/>terms of use."); >");
+                                                $('#errmsg').show();
+                                        	return false;
+                                        }
+                                        if ($('#country_select').val() == 0) {
+                                        	$('#errmsg').html("<? echo dict_translate("Please select your country."); >");
+                                                $('#errmsg').show();
+                                        	return false;
+                                        }
+                                        $('#country').val($('#country_select').val());
+                                	$(this).dialog("close");
+                                        $('#agreed').attr("checked", false);
+                                        $('#country_ctrl').change();
+                                        return true;
+                                },
+				"<? echo dict_translate("Cancel"); >": function() { 
+                                	$(this).dialog("close"); 
+                                        $('#agreed').attr("checked", false);
+                                        $('#errmsg').hide();
+                                        return true;
+                                }
+			}
+		});
+	}
+	var state = is_changeable_country(country);
+   	$('#change_ccode').toggle(state);
+
+	fwUpdateCheck(false, fw_check);
+});
+//-->
+</script>
+</head>
+<? flush(); >
+<body>
+<table class="maintable" cellpadding="0" align="center" cellspacing="0">
+<?
+$top_tab = "link"; include("lib/head.tmpl"); 
+>
+ <tr>
+    <td colspan="2" class="centr">
+    <?if (cfg_is_modified($cfg_file)) { include("lib/modified.tmpl"); }
+      if ($netwarning == "1") { include("lib/warn-net.tmpl"); }
+      if (fileinode($emerg_file) != -1) { include("lib/warn-emerg.tmpl"); }
+      if ($secwarning == "1") { include("lib/warn-security.tmpl"); }
+      include("lib/error.tmpl");>
+    <br>
+    <form id="this_form" enctype="multipart/form-data" action="link.cgi" method="POST" onSubmit="return submitSave(this);">
+    <table border="0" cellpadding="0" cellspacing="0" class="linktable">
+      <tr><th colspan="4"><input type="hidden" id="cc" name="cc" value="changed" disabled="disabled"><? echo dict_translate("Basic Wireless Settings"); ></th></tr>
+	  <tr><td colspan="4" class="tdpad">&nbsp;</td></tr>
+      <!-- wireless link mode -->
+      <tr>
+	      <td class="f d"><? echo dict_translate("Wireless Mode:"); ><span class="help">
+			      <!--<a href="<? echo localize_help("wmode.html");>" rel="help">[?]</a></span>-->
+	      </td>
+        <td>
+	  <select id="wmode" name="wmode" style="width:145px" req="1" realname="<? echo dict_translate("Wireless Mode:"); >" onChange="submitNoSave();">
+	    <option value="sta" selected><? echo dict_translate( "Slave"); ></option>
+	    <option value="ap"><? echo dict_translate( "Master"); ></option>
+	  </select>
+	</td>
+	<td class="f-left" colspan="2">&nbsp;</td>
+      </tr>
+      <!-- ESSID -->
+      <tr>
+        <td class="f"><?  echo dict_translate("Link Name:"); ></td>
+        <td colspan="3"><input type="text" class="config" name="essid" id="essid" regexp="^[ -~]{0,32}$" maxlength="32" value="<?echo $essid;>" req="1" realname="<? echo dict_translate("SSID"); >"/>
+	</td>
+      </tr>
+      <tr<? if ($radio["ccode_fixed"] != 0) { echo " style=\"display:none;\"";}  >>
+        <!-- country code -->
+        <td class="f"><? echo dict_translate("Country Code:"); ></td>
+        <td colspan="2">
+	  <select id="country_ctrl" size="1" name="country_ctrl" onChange="submitNoSave();" disabled="disabled">
+<? 
+	if ($radio["ccode_fixed"] == 0 && $radio["ccode_locked"] != 1) {
+		include("lib/ccode.inc"); 
+	} else { 
+		><option value="<? echo $country; >" selected>Locked</option><? 
+	}
+>
+	  </select><input type="hidden" name="old_country" id="old_country" value="<?echo $old_country>">
+          <input type="hidden" id="country" name="country" value="<?echo $country>">
+	</td>
+        <td>
+<? 
+	if ($radio["ccode_fixed"] == 0 && $radio["ccode_locked"] != 1) {
+>
+        <input type="button" id="change_ccode" class="btn-width" value="<? echo dict_translate("Change..."); >" onClick="change_country($('#country'));"/>
+<?
+        } else {
+>
+        &nbsp;
+<?
+        }
+>
+        </td>
+      </tr>
+      <!-- Duplex Mode -->
+      <tr class="afduplex">
+	<td class="f"><? echo dict_translate("Duplex:"); ></td>
+	<td colspan="3">
+	  <select name="af_duplex" id="af_duplex" onChange="onDuplex(this);">
+	    <option value="half" selected><? echo dict_translate("Half Duplex"); ></option>
+	    <option value="full"><? echo dict_translate("Full Duplex"); ></option>
+	  </select>
+	</td>
+      </tr>
+      <!-- TX Frequency -->
+      <tr>
+        <td class="f"><? echo dict_translate("TX Frequency:"); ></td>
+	<td colspan="3">
+	  <select id="tx_chan_freq" name="tx_chan_freq" req="1" realname="<? echo dict_translate("TX Frequency:"); >" onChange="onTXFrequency(this); toggleObeyRegulatory();">
+	  </select>
+	</td>
+      </tr>
+      <!-- RX Frequency -->
+      <tr>
+        <td class="f"><? echo dict_translate("RX Frequency:"); ></td>
+	<td colspan="3">
+	  <select id="rx_chan_freq" name="rx_chan_freq" req="1" realname="<? echo dict_translate("RX Frequency:"); >" onChange="onRXFrequency(this); toggleObeyRegulatory();">
+	  </select>
+	</td>
+      </tr>
+      <!-- output power -->
+      <tr>
+        <td class="f"><? echo dict_translate("Output Power:"); ></td>
+        <td class="d2" style="padding: 0px 0px 0px 0px;">
+			<div class="slider" id="slider-2" tabIndex="1">
+				<input class="slider-input" id="slider-input-2" name="slider-input-2"/>
+	 		</div>
+		</td>
+		<td class="f-left" colspan="2">
+		<input type="text" class="std_width" id="txpower" name="txpower" size="5" value="<?echo $txpower>" req="1" realname="<? echo dict_translate("Output power"); >" /> dBm
+	</td>
+      </tr>
+      <!-- speed -->
+      <tr>
+        <td class="f"><span id="rate_label"><? if ($rate_auto=="enabled") { echo dict_translate("Maximum Modulation Rate:"); } else { echo dict_translate("Modulation Rate:"); }  ></span></td>
+        <td colspan="3" class="f-left">
+	  <select id="rate" name="rate" req="1" realname="<? if ($rate_auto=="enabled") { echo dict_translate("Maximum Modulation Rate:"); } else { echo dict_translate("Modulation Rate:"); } >"></select>
+	  <input type="checkbox" name="rate_auto" id="rate_auto" value="enabled" onClick="toggleRateAuto();" <? if ($rate_auto=="enabled") { echo "checked"; }>>
+	  <label for="rate_auto"><? echo dict_translate("Automatic Rate Adaptation"); ></label>
+	  <input type="hidden" name="mcast_rate" id="mcast_rate" value="<?echo $mcast_rate>"></td>
+      </tr>
+        &nbsp;</td></tr>
+
+      <!-- rx gain -->
+      <tr>
+        <td class="f"><? echo dict_translate("RX Gain:"); ></td>
+        <td colspan="3" class="f-left">
+	  <select name="rxgain" id="rxgain" onChange="onRXGain(this, true);">
+	    <option value="high"><? echo dict_translate("High"); ></option>
+	    <option value="low"><? echo dict_translate("Low"); ></option>
+          </select>
+        </td>
+      </tr>
+      <!-- security -->
+      <tr><th colspan="4"><? echo dict_translate("Wireless Security"); ></th></tr>
+	  <tr><td colspan="4" class="tdpad">&nbsp;</td></tr>
+      <!-- security settings -->
+      <tr class="afkey">
+	<td class="f"><? echo dict_translate("Key Type:"); ></td>
+	<td colspan="3">
+	  <select name="af_key_type" id="af_key_type" onChange="updateAFKeyError();">
+	    <option value="1" selected><? echo dict_translate("HEX"); ></option>
+	    <option value="2"><? echo dict_translate("ASCII"); ></option>
+	  </select>
+	</td>
+      </tr>
+      <tr class="afkey">
+        <td class="f"><? echo dict_translate("Key:"); ></td>
+        <td><input type="text" class="config" name="af_key" id="af_key" value="<?echo $af_key>" req="1" callback="validateAFKey" realname="<? echo dict_translate("msg_af_key_format|AES-128 key (IPv6 Notation)"); >"/></td>
+      </tr>
+      <tr><td colspan="4" class="tdpad">&nbsp;</td></tr>
+      <tr><th colspan="4">&nbsp;</th></tr>
+      <tr>
+		<td colspan="4" class="change"><input type="submit" value="<? echo dict_translate("Change"); >" /></td>
+      </tr>
+      </table>
+    </form>
+    </td>
+  </tr>
+  <tr> 
+   <td colspan="2">
+      <table cellpadding="0" align="center" cellspacing="0" width="100%">
+      <tr>
+          <td height="10" class="footlogo"><img src="/glogo.cgi" border="0"></td>
+          <td height="10" class="foottext"><? echo dict_translate($oem_copyright); ></td>
+      </tr>
+      </table>
+   </td>
+  </tr>
+</table>
+
+</body>
+</html>

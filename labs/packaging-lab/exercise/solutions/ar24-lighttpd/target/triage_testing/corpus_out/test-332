@@ -1,0 +1,7 @@
+GET / HTTP/1.1
+Host:gen.1
+Host: localhost:3000
+Userl/7.52.1
+Acn.1t:
+*/*
+

@@ -1,13 +1,16 @@
-# Training material
+# Mayhem Training Material
 
-Each one of the top-level folders corresponds to a `Lab` around
-Mayhem. Specifically:
+This folder includes training material for getting familiar with and using
+Mayhem. 
 
-1. *binary-intro*: Lab: Running Mayhem on your First Program (Richard)
-2. *methodology*: Introduction to Software Testing and Dynamic Analysis: What’s Inside Mayhem (Alex Taylor)
-3. *TBD*: Lab: Running on Network Binaries (Marlies)
-4. *tinyxml2-harness-lab*: Lab: Introduction to Harness Writing in C (Mark)
-5. *TBD*: Lab: Advanced C Harnessing (Alex Taylor)
-6. *binary-shared-libraries*: Lab: Harnessing Shared Library Binaries (Ryan Goulden)
-7. *binary-patching*: Lab: Binary Patching & Harnessing (Alex Taylor)
+## Labs
+*binary-intro*: Lab: Running Mayhem on your First Program
+*network-lab*: Lab: Running on Network Binaries
+*packaging-lab*: Lab: More concepts on packaging a target for analysis
+*tinyxml2-harness-lab*: Lab: Introduction to Harness Writing in C
+*advanced-c-harnessing-lab*: Lab: Advanced C Harnessing
+*binary-shared-libraries*: Lab: Harnessing Shared Library Binaries
+*binary-patching*: Lab: Binary Patching & Harnessing
 
+## Lecture
+*methodology*: Introduction to Software Testing and Dynamic Analysis: What’s Inside Mayhem

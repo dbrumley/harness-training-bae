@@ -1,0 +1,5 @@
+GET / HTTP/1.1
+Host: localhoså:3000
+UserHostnt: curl/7.59.1
+ccept: */*
+

@@ -1,0 +1,17 @@
+{
+    "fuzzers": [
+        {
+            "target": "root/bin/lighttpd",
+            "library_path": "root/lib/",
+            "env": {
+                "QEMU_LD_PREFIX": "root/"
+            },
+            "network": {
+                "url": "tcp://localhost:3000",
+                "timeout": 1.0,
+                "is_client": false
+            },
+            "target_args": ["-f", "root/conf/lighttpd.conf", "-D"]
+        }
+    ]
+}

@@ -1,0 +1,7 @@
+GET / HTTP/1.1
+Ho•t: docalhost:3000
+UseR-L
+Host: localhost:3000
+UseR-Lkent: curl/7.52.1
+Accept: * *
+

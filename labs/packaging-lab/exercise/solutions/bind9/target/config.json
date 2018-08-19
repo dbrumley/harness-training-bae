@@ -1,0 +1,21 @@
+{
+    "fuzzers": [
+        {
+            "library_path": "root/lib/x86_64-linux-gnu:root/usr/lib/x86_64-linux-gnu",
+            "target": "root/usr/sbin/named",
+            "target_args": [
+                "-f",
+                "-p",
+                "2222",
+                "-c",
+                "root/etc/named/named.conf"
+            ],
+            "network": {
+                "url": "udp://[::1]:2222",
+                "is_client": false,
+                "timeout" : 2.0
+            },
+            "timeout": 3
+        }
+    ]
+}

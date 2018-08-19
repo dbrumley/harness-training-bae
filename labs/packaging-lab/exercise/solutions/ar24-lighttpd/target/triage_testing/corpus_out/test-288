@@ -1,0 +1,4 @@
+GET / HTTP/1.1
+Host: localhostL3000
+User-Agent: curl/7pt: */*
+

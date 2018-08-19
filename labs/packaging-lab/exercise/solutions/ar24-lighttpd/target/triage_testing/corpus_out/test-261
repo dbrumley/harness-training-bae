@@ -1,0 +1,5 @@
+GET / HTTP/1.1
+Host: local…ost:3000
+User-Agent: cury/7.52.1
+Accept: */*
+

@@ -1,0 +1,1 @@
+$(function(){$("a[rel=help]").click(function(){var d=$(this).position();var a=d.left+$(this).outerWidth();var c=d.top-$(document).scrollTop();var b=$("<div/>").load($(this).attr("href"));b.attr("title","Help");b.dialog({bgiframe:true,modal:true,height:"auto",width:300,resizable:false,position:[a,c],buttons:{Close:function(){$(this).dialog("close")}}});return false})});

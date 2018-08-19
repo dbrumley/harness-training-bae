@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+<html>
+<head>
+<title><? echo get_title($cfg, dict_translate("Advanced")); ></title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<meta http-equiv="Pragma" content="no-cache">
+<link rel="shortcut icon" href="/130904.1419/favicon.ico" >
+<link href="/130904.1419/style.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" language="javascript" src="jsl10n.cgi"></script>
+<script type="text/javascript" src="/130904.1419/slider-min.js"></script>
+<script type="text/javascript" src="/130904.1419/jsval.js"></script>
+<script type="text/javascript" src="/130904.1419/util.js"></script>
+<script type="text/javascript" language="javascript1.2" src="/130904.1419/slink.js"></script>
+<script type="text/javascript" src="/130904.1419/js/jquery.js"></script>
+<script type="text/javascript" src="/130904.1419/js/jquery.cookie.js"></script>
+<script type="text/javascript" src="/130904.1419/js/jquery.utils.js"></script>
+<link type="text/css" rel="StyleSheet" href="/130904.1419/bluecurve.css" />
+<script type="text/javascript" language="javascript">
+	//<!--
+        <? gen_update_check($cfg); >
+
+	function init() {
+                $("#eth0_speed").val("<? echo $eth0_speed; >");
+                $("#af0_speed").val("<? echo $af0_speed; >");
+                fwUpdateCheck(false, fw_check);
+	}
+
+	$.fn.enable = function(enable) {
+		return enable ?
+			this.removeClass('disabled').attr('disabled', false) :
+			this.attr('disabled', true).addClass('disabled');
+	}
+
+	function doSubmit() {
+		$('#adv_form').submit();
+	}
+
+jQuery(document).ready(init);
+	//-->
+</script>
+</head>
+<? flush(); >
+<body>
+<table class="maintable" cellpadding="0" align="center" cellspacing="0"><?
+$top_tab = "4dv"; include("lib/head.tmpl");
+>  <tr>
+    <td colspan="2" class="centr">
+    <?if (cfg_is_modified($cfg_file)) { include("lib/modified.tmpl"); } 
+    if (fileinode($emerg_file) != -1) { include("lib/warn-emerg.tmpl"); }
+    include("lib/error.tmpl");>
+    <br>
+    <form id="adv_form" enctype="multipart/form-data" action="advanced.cgi" method="POST"
+    	  onSubmit="return validateStandard(this, 'error');">
+    <table border="0" cellpadding="0" cellspacing="0" class="linktable">
+
+ <!-- Advanced wireless -->
+      <tr><th colspan="3"><? echo dict_translate("Advanced Wireless Settings"); ></th></tr>
+	  <tr><td colspan="3" class="tdpad">&nbsp;</td></tr>
+      <tr>
+        <td class="f d"><? echo dict_translate("GPS Clock Synchronization:"); ></td>
+        <td class="f-left" colspan="2">
+                <input type="checkbox" id="gps_sync" name="gps_sync" value="enabled"
+		<?if ($gps_sync == "enabled") { echo "checked"; }>><label class="f" for="gps_sync"><? echo dict_translate("Enable"); ></label>
+        </td>
+      </tr>
+      <tr><td colspan="3" class="tdpad">&nbsp;</td></tr>
+      <!-- Advanced ethernet -->
+      <tr><th colspan="3"><? echo dict_translate("Advanced Ethernet Settings"); ></th></tr>
+	  <tr><td colspan="3" class="tdpad">&nbsp;</td></tr>
+      <tr>
+        <td class="f"><? echo dict_translate(devname2ifname("eth0") + " Speed:"); ></td>
+            <td colspan="2">
+                <select id="eth0_speed" name="eth0_speed">
+			<? fill_eth_speed(); >
+                </select>
+            </td>
+      </tr>
+      <tr>
+        <td class="f"><? echo dict_translate(devname2ifname("af0") + " Speed:"); ></td>
+            <td colspan="2">
+                <select id="af0_speed" name="af0_speed">
+			<? fill_eth_speed_gige(); >
+                </select>
+            </td>
+      </tr>
+      <tr>
+        <td class="f d"><? echo dict_translate("Flow Control:"); ></td>
+        <td class="f-left" colspan="2">
+                <input type="checkbox" id="flowcntl" name="flowcntl" value="enabled"
+        <?if ($flowcntl == "enabled") { echo "checked"; }>><label class="f" for="flowcntl"><? echo dict_translate("Enable ("+ devname2ifname("af0") + " port only)"); ></label>
+        </td>
+      </tr>
+	  <tr><td colspan="3" class="tdpad">&nbsp;</td></tr>
+      <tr><th colspan="3">&nbsp;</th></tr>
+      <tr>
+		<td colspan="3" class="change"><input type="submit" value="<? echo dict_translate("Change"); >" /></td>
+      </tr>
+      </table>
+    </form>
+    </td>
+  </tr>
+  <tr> 
+   <td colspan="2">
+      <table cellpadding="0" align="center" cellspacing="0" width="100%">
+      <tr>
+          <td height="10" class="footlogo"><img src="/glogo.cgi" border="0"></td>
+          <td height="10" class="foottext"><? echo dict_translate($oem_copyright); ></td>
+      </tr>
+      </table>
+   </td>
+  </tr>
+</table>
+
+</body>
+</html>

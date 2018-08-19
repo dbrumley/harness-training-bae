@@ -1,0 +1,6 @@
+GET / HTTP/1.1
+Host: localhost:3000
+User-lhos-lhost:3000
+Ust:3000
+User-Agenccept: */*
+
