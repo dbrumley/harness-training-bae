@@ -39,7 +39,7 @@ Typically speaking, it's best to try to harness a whole application first, along
 
 A large part of the difficulty in harnessing binary-only applications is that---unless the application is trivially harnessable---it often requires reverse-engineering to figure out what to harness, and something like binary patching to implement the harness. Harnessing just the shared libraries of an application provided in binary-only form skirts these difficulties, because usually the whole point of a software library is to provide convenient and flexible ways to programmatically exercise its functionality.
 
-For clarification: this tutorial is aimed at exploring _custom_ shared libraries shipped with an application for which source is not available. If, for example, you know that an application uses an open source library, it's better to acquire the source (preferably for the same version as the application uses) and use source-harnessing techniques on that.
+For clarification: this tutorial is aimed at exploring _custom_ shared libraries shipped with an application for which source is not available. If, for example, you know that an application uses an open source library, it's better to acquire the source (preferably for the same version as the application uses) and use source-harnessing techniques on that. As another example, if a closed-source library is released stand-alone to developers, it will likely come with header files that can make the best harnessing approach more like source-based harnessing than the process described below.
 
 ### Requirements
 
@@ -87,17 +87,23 @@ Below is a strategy for harnessing these shared libraries. Physically follow alo
 
     The missing types here are `int`, `void`, and `char *, int`. You could determine this through trial and error, or via reverse engineering.
 
-4. See `harness.cxx`; or, if you think you know what to do, try writing one on your own first. Ensure that you can compile, run, and fuzz this harness before moving on.
+4. See `harness.cxx`; or, if you think you know what to do, try writing one on your own first. Ensure that you can compile, run, and fuzz this harness before moving on. Try to re-create `harness.cxx` on your own, to check your understanding.
 
 Warning: this strategy works best when using the same C++ compiler and platform as the target libraries were built with. For example, things may not work if you attempt to compile your harness with g++ when the library was compiled with clang++. In particular: g++'s libstdc++ changed its implementation of std::string a few years ago, so older (still in use!) versions of g++ toolchains are not binary compatible with recent versions. (Particularly for g++, solving this is sometimes as easy as switching between `-D_GLIBCXX_USE_CXX11_ABI=0` and `-D_GLIBCXX_USE_CXX11_ABI=1`.)
 
+### Exercise 1: llua_simple
+
+To practice what you've just learned, try to harness `libllua.so` using the example set by the provided `llua_simple` binary. Specifically, harness the `llual_newstate()` `llual_loadfile()` `lua_pcall()` sequence. `libllua.so` is a C library, so unfortunately you'll have to guess more about function argument types than if it were in C++.
+
+You may look at the `llua_simple.c` source code, but if you have reverse engineering experience, try this exercise without it at first (and look only at the `llua_simple` and `libllua.so` binaries). Either way, **avoid** going online (or to `/usr/include`) to look for the Lua header files! For the sake of practice, we're pretending like `libllua.so` is a closed-source library with no headers or source available (spoiler: it's not).
+
 ### Example 2: C++ Objects
+
+Interfacing with C++
 
 TODO: Example where the harness needs to replicate C++ classes and call C++ constructors.
 
-### Exercise 1: TODO
-
-### Exercise 2: Mapnik test code.
+### Exercise 3: Mapnik test code.
 
 TODO: (I haven't totally settled on the mapnik example, still deciding)
 

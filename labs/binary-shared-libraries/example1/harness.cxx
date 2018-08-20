@@ -1,4 +1,7 @@
-// c++ -o harness harness.cxx MyCustomCxxLib.so my_custom_c_lib.so
+//
+// Compile with: c++ -o harness harness.cxx MyCustomCxxLib.so my_custom_c_lib.so
+//
+
 #include <stdio.h>
 #include <string.h>
 
