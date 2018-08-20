@@ -10,5 +10,5 @@ sudo chgrp -R $USER $HOME/.minikube
 #kubectl create clusterrolebinding tiller-cluster-rule --clusterrole=cluster-admin --serviceaccount=kube-system:tiller
 #kubectl patch deploy --namespace kube-system tiller-deploy -p '{"spec":{"template":{"spec":{"serviceAccount":"tiller"}}}}'
 echo core | sudo tee /proc/sys/kernel/core_pattern
-cd /home/richard/training/mchart/
+cd /home/richard/mchart/
 ./scripts/dev/dev-install.sh
