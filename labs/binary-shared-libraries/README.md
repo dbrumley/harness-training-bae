@@ -91,11 +91,13 @@ Below is a strategy for harnessing these shared libraries. Physically follow alo
 
 Warning: this strategy works best when using the same C++ compiler and platform as the target libraries were built with. For example, things may not work if you attempt to compile your harness with g++ when the library was compiled with clang++. In particular: g++'s libstdc++ changed its implementation of std::string a few years ago, so older (still in use!) versions of g++ toolchains are not binary compatible with recent versions. (Particularly for g++, solving this is sometimes as easy as switching between `-D_GLIBCXX_USE_CXX11_ABI=0` and `-D_GLIBCXX_USE_CXX11_ABI=1`.)
 
-### Exercise 1: llua_simple
+### Exercise: llua_simple
 
 To practice what you've just learned, try to harness `libllua.so` using the example set by the provided `llua_simple` binary. Specifically, harness the `llual_newstate()` `llual_loadfilex()` `lua_pcall()` sequence. `libllua.so` is a C library, so unfortunately you'll have to guess more about function argument types than if it were in C++.
 
 You may look at the `llua_simple.c` source code, but if you have reverse engineering experience, try this exercise without it at first (and look only at the `llua_simple` and `libllua.so` binaries). Either way, **avoid** going online (or to `/usr/include`) to look for the Lua header files! For the sake of practice, we're pretending like `libllua.so` is a closed-source library with no headers or source available (spoiler: it's not).
+
+There's no specific intended vulnerability for your resulting harness to be able to hit in this exercise; but, it should be able to get lots of coverage.
 
 ### Example 2: C++ Objects
 
@@ -153,21 +155,13 @@ public:
 }
 ```
 
-### Exercise 2: 
-
-
-
-### Exercise 3: Mapnik test code.
-
-TODO: (I haven't totally settled on the mapnik example, still deciding)
-
-This exercise is much more of a "real" application than previous examples and exercises. The code is modified test code from [https://github.com/mapnik/mapnik](https://github.com/mapnik/mapnik), but treat all mapnik library code as if the source were unavailable for the purposes of this exercise. (Feel free to consult the source of any more standard open source libraries used in this exercise, e.g. boost or gui/rendering libraries.)
-
-Your goal is 
+To study this example, go through the same process enumerated for the first example. Study `harness.cxx`, and the source files for `example2` and `ex2lib.so`. To check your understanding, close `harness.cxx` and attempt to recreate it using only the binaries (of course, feel free to cheat with some of the `example2`/`ex2lib.so` source to ease the reverse-engineering process).
 
 ### Conclusion
 
-TODO
+This lab dealt with a specific method of binary harnessing that is applicable to many real-world applications. It's not the only way to harness a binary, and should join your playbook of techniques rather than be interpreted as a "correct" approach to harnessing.
+
+Keep in mind that the methods here are not a good way of harnessing when source is available. However, taking advantage of Mayhem's ability to analyze binary-only software will occasionally require getting your hands dirty.
 
 ### Addendum
 
