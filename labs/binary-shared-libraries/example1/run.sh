@@ -1,4 +1,3 @@
 #!/bin/sh
-set -xe
-cd "`dirname "$0"`"
-LD_LIBRARY_PATH="`pwd -P`" exec ./example1 "$@"
+set -e
+LD_LIBRARY_PATH="`dirname "$0"`" exec ./example1 "$@"

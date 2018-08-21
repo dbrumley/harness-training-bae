@@ -24,21 +24,23 @@ CustomClassA::CustomClassA() : magic(0xdeadbeef) {
   member.push_back(1337);
 }
 
+CustomClassA::~CustomClassA() {}
+
 int *CustomClassA::methodA() {
   return &member[0];
 }
 
-CustomClassB::CustomClassB(CustomClassA *arg1, const std::map<int, std::string> &arg2) : a(arg1), m(arg2), magic(0xfeedface) {
+CustomClassB::CustomClassB(CustomClassA *arg1, std::map<int, std::string> &arg2) : a(arg1), m(&arg2), magic(0xfeedface) {
   if(!a || a->magic != 0xdeadbeef) {
     debug_warn_about("that CustomClassA instance");
   }
   int start = *a->methodA();
-  m[start] = "start";
+  (*m)[start] = "start";
 }
 
 std::string CustomClassB::methodB() {
   int *x = a->methodA();
-  std::string &ret = m[*x];
+  std::string &ret = (*m)[*x];
   if(ret == "") {
     if(globalCounter >= globalObject.size()) {
       std::cerr << "(congratz, you're hitting the bug)" << std::endl << std::flush;

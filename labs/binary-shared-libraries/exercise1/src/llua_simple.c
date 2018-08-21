@@ -39,17 +39,17 @@ int main(int argc, char *argv[]) {
                                      // all pointers are the same, so "void *" is as
                                      // good as "lua_State *"
 
-    status = llual_loadfile(L, argv[1]); // Use your fuzz file here.
+    status = llual_loadfilex(L, argv[1], 0); // Use your fuzz file here.
     if(status) {
         // When writing harnesses, feel free to just use abort() for any fail
         // cases that you don't think you'll actually run into (like this one).
-        msg = lua_tostring(L, -1);
+        msg = lua_tolstring(L, -1, NULL);
         fputs(msg ? msg : "failed to load file\n", stderr);
         return 1;
     }
 
-    status = lua_pcall(L, 0, -1, 0); // LUA_MULTRET is -1
-    msg = lua_tostring(L, -1);
+    status = lua_pcallk(L, 0, -1, 0, 0, NULL); // LUA_MULTRET is -1
+    msg = lua_tolstring(L, -1, NULL);
     puts(msg ? msg : "nil");
     lua_close(L);
     return 0;

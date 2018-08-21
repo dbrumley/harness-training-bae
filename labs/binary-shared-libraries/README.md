@@ -52,7 +52,7 @@ This tutorial is for C and C++ libraries. Many details and techniques will be sp
 
 This is a toy program that makes unnecessary use of custom shared libraries to merely echo its command line args back to stdout.
 
-Note that "example1" is a C++ program, using one C++ library "MyCustomCxxLib.so" and one C library "my_custom_c_lib.so". Feel free to look at the source before going through the exercise.
+Note that `example1` is a C++ program, using one C++ library "MyCustomCxxLib.so" and one C library "my_custom_c_lib.so". Feel free to look at the source before going through the exercise.
 
 Below is a strategy for harnessing these shared libraries. Physically follow along with these steps.
 
@@ -66,7 +66,7 @@ Below is a strategy for harnessing these shared libraries. Physically follow alo
 
 2. Decide which functions we'd like to call in our harness, and in which order. Typically, this is achieved by mild reverse-engineering of the application or libraries, to find example sequences of how the target functions are being called.
 
-    This isn't a reverse-engineering tutorial, so if you aren't already comfortable with reverse engineering, just open main.cpp. For this program, our harness should pass the output of `MyCustomCxxLib::process_data()` to `my_custom_c_lib_process_data()`, just as seen inside the loop in example1's `main()`.
+    This isn't a reverse-engineering tutorial, so if you aren't already comfortable with reverse engineering, just open main.cpp. For this program, our harness should pass the output of `MyCustomCxxLib::process_data()` to `my_custom_c_lib_process_data()`, just as seen inside the loop in `example1`'s `main()`.
 
     (While a harness doesn't need to exactly imitate the application's usage of libraries, there are a variety of issues you can run into when straying too far. In this case, blindly trying to fuzz `my_custom_c_lib_process_data()` alone will cause the library to issue a "bad format!" error, whereas the combination of `MyCustomCxxLib::process_data()`-then-`my_custom_c_lib_process_data()` will work fine. This particular case is somewhat artificial, but stereotypical of real-world harnessing efforts.)
 
@@ -93,15 +93,69 @@ Warning: this strategy works best when using the same C++ compiler and platform 
 
 ### Exercise 1: llua_simple
 
-To practice what you've just learned, try to harness `libllua.so` using the example set by the provided `llua_simple` binary. Specifically, harness the `llual_newstate()` `llual_loadfile()` `lua_pcall()` sequence. `libllua.so` is a C library, so unfortunately you'll have to guess more about function argument types than if it were in C++.
+To practice what you've just learned, try to harness `libllua.so` using the example set by the provided `llua_simple` binary. Specifically, harness the `llual_newstate()` `llual_loadfilex()` `lua_pcall()` sequence. `libllua.so` is a C library, so unfortunately you'll have to guess more about function argument types than if it were in C++.
 
 You may look at the `llua_simple.c` source code, but if you have reverse engineering experience, try this exercise without it at first (and look only at the `llua_simple` and `libllua.so` binaries). Either way, **avoid** going online (or to `/usr/include`) to look for the Lua header files! For the sake of practice, we're pretending like `libllua.so` is a closed-source library with no headers or source available (spoiler: it's not).
 
 ### Example 2: C++ Objects
 
-Interfacing with C++
+`example2` is another toy program. We'll follow the same general process as we did for `example1` to harness it: reverse engineer the binaries to make working header files, write a harness in C++ that exercises the library (in a way similar to how we see the library being used), then compile the harness and link it to the library.
 
-TODO: Example where the harness needs to replicate C++ classes and call C++ constructors.
+When C++ objects are involved, this process requires more work and a greater attention to detail. Functions you'll want to harness may take C++ objects as parameters, which requires your harness to create these C++ objects beforehand. Furthermore, creating and properly initializing C++ objects requires having a correct-enough class definition for the object.
+
+Quick refresher on C++ classes:
+
+```
+class MyClass /* : public OptionalBaseClass */ {
+public: // <- for harnessing purposes, just set everything public.
+  int member1;
+  int member2;
+  // ^ the size of a class is the size of a struct holding all of its
+  // non-static data members (plus a vtable pointer, if the class or a
+  // parent class has any virtual member functions. But, that happens
+  // automatically).
+
+  // Constructors. From a reverse-engineering perspective, constructors
+  // are just (non-virtual) member functions that get called to initalize
+  // classes.
+  MyClass(int, float);
+  MyClass(char *);
+
+  // Member functions. From a reverse-engineering perspective, they're just
+  // functions that take an implicit first argument, known as "this", which
+  // is a pointer to a struct containing the object's data members.
+  int do_something(int);
+  void do_something_else(float);
+}
+```
+
+(You can read more about the syntax of C++ class definition at [https://en.cppreference.com/w/cpp/language/class], but most of the other things you can do in a class defintion are irrelevant to harnessing and reverse engineering.)
+
+Three things matter when creating a "correct-enough" class definition:
+
+1. Function declarations for member functions that you intend to call (including constructors).
+
+2. The size of the class.
+
+3. If the class has any virtual methods (including destructors), or any parent classes with virtual methods, you need to include all of those (and possibly re-create the inheritance hierarchy). We'll stay away from virtual methods in this tutorial.
+
+If a program used the example class above, a reverse-engineered definition of the class for use in a harness might look like:
+
+```
+class MyClass {
+public:
+  char data[8]; // two ints.
+
+  // No need to represent constructors and member functions that the harness
+  // doesn't care about using.
+  MyClass(char *);
+  int do_something(int);
+}
+```
+
+### Exercise 2: 
+
+
 
 ### Exercise 3: Mapnik test code.
 
