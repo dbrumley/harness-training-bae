@@ -43,7 +43,7 @@ For clarification: this tutorial is aimed at exploring _custom_ shared libraries
 
 ### Requirements
 
-* Skills: Basic C/C++ programming
+* Skills: Basic C/C++ programming, some reverse engineering
 * Tools: g++ (and gnu binutils)
 
 This tutorial is for C and C++ libraries. Many details and techniques will be specific to C and C++. Although this tutorial uses Linux, and the exact commands shown will only work on Linux, all the principles and tricks here translate to any platform that supports shared libraries---Windows, Mac OS, iOS, Android and more---albeit with different tools and commands.
